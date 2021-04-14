@@ -103,3 +103,7 @@ body{
 
 }
 
+.close{
+    display: flex;
+    justify-content: center;
+}
