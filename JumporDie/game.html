@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump or die</title>
+
+    <!-- Librerias necesarias -->
+    <!-- CDN Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Three.js -->
+    <script type="text/javascript" src="js/libs/three.js"></script>
+    <script type="text/javascript" src="js/libs/MTLLoader.js"></script>
+    <script type="text/javascript" src="js/libs/FBXLoader.js"></script>
+    <script type="text/javascript" src="js/libs/OBJLoader.js"></script>
+    <script type="text/javascript" src="js/libs/fflate.min.js"></script>
+
+    <script type = "text/javascript">
+
+        // Variables globales
+        var scene
+        var renderer
+        var camera
+
+        var clock
+        var delta
+
+        var mixers = []
+        var action, action2
+
+        var keys = {}
+        var flag = false
+
+        $(document).ready(function () {
+
+            clock = new THREE.Clock()
+
+            // Tamano del canvas
+            var canvasSize = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+
+            // Inicializar el renderer
+            renderer = new THREE.WebGLRenderer()
+
+            //Limpiamos la pantalla
+            renderer.setClearColor(new THREE.Color(0,0,0))
+            renderer.setSize(
+                canvasSize.width,
+                canvasSize.height
+            )
+
+            // Inicializar la camara
+            camera = new THREE.PerspectiveCamera(
+                //Campo de vision
+                75,
+                //Relacion aspecto
+                canvasSize.width / canvasSize.height,
+                //Que tan cerca se va a ver
+                0.1,
+                // Que tan lejos se va a ver
+                100
+            )
+
+            camera2 = new THREE.PerspectiveCamera(
+                //Campo de vision
+                75,
+                //Relacion aspecto
+                canvasSize.width / canvasSize.height,
+                //Que tan cerca se va a ver
+                0.1,
+                // Que tan lejos se va a ver
+                100
+            )
+
+            camera2.position.x = 0
+            camera2.position.y = 8
+            camera2.position.z = 13
+
+            // En caso de animacion de camara, camara inical 0, 10, 20
+
+            // Inicializamos la escena
+            scene = new THREE.Scene()
+
+            // Agregamos la etiquetada canvas dentro del Div
+            $('#scene-section').append(renderer.domElement)
+
+            // Iluminacion
+            var ambient = new THREE.AmbientLight(
+                // Color
+                new THREE.Color(1,1,1),
+                // intensidad
+                1.0
+            )
+
+            var directional = new THREE.DirectionalLight(
+                // Color
+                new THREE.Color(1,1,0),
+                // intensidad
+                0.4
+            )
+
+            // Posicion de la luz direccional
+            directional.position.set(0,0,1)
+
+            // Ambos tipos de iluminacion se agregan a la escena
+            scene.add(ambient)
+            scene.add(directional)
+
+            //Carga de obj
+            loadOBJWithMTL(
+                //Carpeta donde esta el modelo,
+                'Assets/Modelos/Escenario/',
+                // El archivo obj del modelo
+                'scaniverse-20210409-165615.obj',
+                // El archivo mtl
+                'scaniverse-20210409-165615.mtl',
+                (miObjetoYaCargado) =>{
+                    // Posicion del objeto en x y z
+                    miObjetoYaCargado.position.z = 0
+                    miObjetoYaCargado.position.x = 0
+                    miObjetoYaCargado.position.y = 0
+
+                    // Escala del objeto en x y z
+                    miObjetoYaCargado.scale.set(10,10,10)
+
+                    // Nombre del objeto
+                    miObjetoYaCargado.name = 'Escenario'
+
+                    scene.add(miObjetoYaCargado)
+
+                    camera2.lookAt(miObjetoYaCargado.position)
+                }
+            )
+
+            // Carga de fbx
+            var loader = new THREE.FBXLoader()
+            loader.load('Assets/frog-animation.fbx', function (personaje) {
+                // AnimationMixer es un reproductor de animaciones
+                personaje.mixer = new THREE.AnimationMixer(personaje)
+
+                // El reproductor de animaciones de nuestro modelo
+                // entra al arreglo de mixers
+                mixers.push(personaje.mixer)
+
+                // Aqui van las animaciones que se hicieron en maya
+                action = personaje.mixer.clipAction(personaje.animations[0])
+                action2 = personaje.mixer.clipAction(personaje.animations[1])
+
+                // Asignamos las animaciones
+                // la de mayor peso es la que se va a reproducir
+                // NOTA: el peso menor es 0 y el mayor es 1
+                // se puede combinar pesos, por ejemplo ponerle a ambos .5
+                // entonces las animaciones se mezclarian
+                // action.weight = 0
+                // action2.weight = 1
+
+                // le damos la posicion que queramos en x y z
+                personaje.position.z = -10
+                personaje.position.x = -10
+                personaje.position.y = +5
+
+                // le asignamos una escala en x y z
+                personaje.scale.set(.15,.15,.15)
+
+                // Le asignamos un nombre al modelo
+                personaje.name = 'frog'
+
+                // Agregamos el personaje a la escena
+                scene.add(personaje)
+
+            })
+
+            // Dibujamos un grid
+            var grid = new THREE.GridHelper(50, 10, 0xffffff, 0xffffff);
+		    grid.position.y = -1;
+		    scene.add(grid);
+
+            document.addEventListener('keydown', onKeyDown);
+		    document.addEventListener('keyup', onKeyUp);
+
+            timer = 0
+
+            // Mandamos llamar la funcion render
+            render()
+        })
+
+        function render() {
+            //Recibe como parametro la funcion padre
+            // Se llama arias veces (update)
+            requestAnimationFrame(render)
+
+            delta = clock.getDelta()
+
+            // Mide el arreglo de mixers mientras no este vacio
+            // lo va a recorrer y hara el update de las animaciones
+            if (mixers.length > 0) {
+                for (let i = 0; i < mixers.length; i++) {
+                    mixers[i].update(delta)
+                }
+                if (flag) {
+                    action.weight = 0 
+                    action2.weight = 1
+
+                    flag = false
+                }else{
+                    action.weight = 1 
+                    action2.weight = 0
+                }
+            }
+
+            var yaw = 0;
+		    var forward = 0;
+            if (keys["A"]) {
+		    	yaw = 5;
+		    } else if (keys["D"]) {
+			    yaw = -5;
+		    }
+		    if (keys["W"]) {
+			    forward = -20;
+		    } else if (keys["S"]) {
+			    forward = 20;
+            }
+			
+			camera.rotation.y += yaw * delta;
+			camera.translateZ(forward * delta);
+
+            // timer = timer + 1
+            // // console.log(timer)
+            // if(timer == 100){
+            //     console.log('x: ' + camera.position.x + " y: " + camera.position.y + " z: " + camera.position.z) 
+            // }else if(timer > 200){
+            //     timer = 0
+            // }
+		
+
+            moverPersonaje(delta)
+            // Recibe como parametro que escena va a dibujar, y la camara que se va a utilizar
+            renderer.render(scene, camera2)
+        }
+
+        function moverPersonaje(delta){
+            var character = scene.getObjectByName('frog')
+
+            if (keys["W"]) {
+                flag = true
+                if(character.position.x > -15){
+                    character.position.x -= 10*delta
+                }   
+            }
+        }
+
+        function onKeyDown(event) {
+		    keys[String.fromCharCode(event.keyCode)] = true;
+	    }
+
+	    function onKeyUp(event) {
+		    keys[String.fromCharCode(event.keyCode)] = false;
+	    }
+
+        function loadOBJWithMTL(path, objFile, mtlFile, onLoadCallback) {
+            var mtlLoader = new THREE.MTLLoader()
+            mtlLoader.setPath(path)
+
+            mtlLoader.load(mtlFile,(material)=>{
+                var objLoader = new THREE.OBJLoader()
+                objLoader.setPath(path)
+                objLoader.setMaterials(material)
+                objLoader.load(objFile,(object3d)=>{
+                    onLoadCallback(object3d)
+                })
+            })
+        }
+    </script>
+</head>
+<body>
+    <div id="scene-section" />
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/login.css">
+    <!-- <link rel="stylesheet" href="index.css"> -->
+
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="contenedor">
+        <div class="cuadro">
+            <form autocomplete='off' class='form' id="signin-form">
+                <div class='control'>
+                  <h1>
+                    Iniciar Sesion
+                  </h1>
+                </div>
+                <div class='control block-cube block-input'>
+                  <input name='username' placeholder='Username' type='text' id="login-username">
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                </div>
+                <div class='control block-cube block-input'>
+                  <input name='password' placeholder='Contraseña' type='password' id="login-password">
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                </div>
+                <button class='btn block-cube block-cube-hover' type='submit'>
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='text'>
+                    Iniciar Sesion
+                  </div>
+                </button>
+                <button class='btn block-cube block-cube-hover' type='button'>
+                    <div class='bg-top'>
+                      <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                      <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <class class='text'>
+                      Iniciar sesion con Facebook
+                    </class>
+                  </button>
+              </form>
+        </div>
+        <div class="cuadro">
+            <form autocomplete='off' class='form' id="signup-form">
+                <div class='control'>
+                  <h1>
+                    Registrarse
+                  </h1>
+                </div>
+                <div class='control block-cube block-input'>
+                  <input name='username' placeholder='Username' type='text' id="signup-username">
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                </div>
+                <div class='control block-cube block-input'>
+                    <input name='email' placeholder='Correo' type='email' id="signup-email">
+                    <div class='bg-top'>
+                      <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                      <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                      <div class='bg-inner'></div>
+                    </div>
+                  </div>
+                <div class='control block-cube block-input'>
+                  <input name='password' placeholder='Contraseña' type='password' id="signup-password">
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                </div>
+                <button class='btn block-cube block-cube-hover' type='submit'>
+                  <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='bg'>
+                    <div class='bg-inner'></div>
+                  </div>
+                  <div class='text'>
+                    Registrarse
+                  </div>
+                </button>
+              </form>
+        </div>
+    </div>
+    
+
+    <!-- Firebase scripts -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
+            authDomain: "gcw-pf.firebaseapp.com",
+            projectId: "gcw-pf",
+            storageBucket: "gcw-pf.appspot.com",
+            messagingSenderId: "270321268780",
+            appId: "1:270321268780:web:68b32fb6bf2b9e0ffaf989",
+            measurementId: "G-3TRFSPGLMN"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+
+        const auth = firebase.auth();
+    </script>
+
+    <!-- Custom code -->
+    <script src="./js/login.js"></script>
+</body>
+</html>
