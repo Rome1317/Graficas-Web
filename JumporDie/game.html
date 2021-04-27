@@ -7,14 +7,20 @@
     <title>Jump or die</title>
 
     <!-- Librerias necesarias -->
+    <link rel="stylesheet" href="./css/game.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
     <!-- CDN Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Three.js -->
-    <script type="text/javascript" src="js/libs/three.js"></script>
-    <script type="text/javascript" src="js/libs/MTLLoader.js"></script>
-    <script type="text/javascript" src="js/libs/FBXLoader.js"></script>
-    <script type="text/javascript" src="js/libs/OBJLoader.js"></script>
-    <script type="text/javascript" src="js/libs/fflate.min.js"></script>
+    <script type="text/javascript" src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/MTLLoader.js"></script>
+    <script type="text/javascript"src="js/libs/FBXLoader.js"></script>
+    <script type="text/javascript"src="js/libs/OBJLoader.js"></script>
+    <script type="text/javascript"src="js/libs/inflate.min.js"></script>
+    <script type="text/javascript"src="js/libs/Sky.js"></script>
+    <script type="text/javascript"src="js/libs/Water.js"></script>
 
     <script type = "text/javascript">
 
@@ -27,10 +33,15 @@
         var delta
 
         var mixers = []
-        var action, action2
+        var action, action2, action3
 
         var keys = {}
-        var flag = false
+        var flag = 0
+
+        var pyramid
+        var troncos = []
+
+        var indiceNombre = 0
 
         $(document).ready(function () {
 
@@ -75,9 +86,10 @@
                 100
             )
 
-            camera2.position.x = 0
-            camera2.position.y = 8
-            camera2.position.z = 13
+            camera2.position.x = -7.997888024743593
+            camera2.position.y = 3.7446499999423395
+            camera2.position.z = 6.221919561140418
+            camera2.rotation.y = THREE.Math.degToRad(290);
 
             // En caso de animacion de camara, camara inical 0, 10, 20
 
@@ -90,54 +102,96 @@
             // Iluminacion
             var ambient = new THREE.AmbientLight(
                 // Color
-                new THREE.Color(1,1,1),
+                new THREE.Color(.8,.8,.8),
                 // intensidad
                 1.0
             )
 
             var directional = new THREE.DirectionalLight(
                 // Color
-                new THREE.Color(1,1,0),
+                new THREE.Color(.6,.6,.6),
                 // intensidad
                 0.4
             )
-
-            // Posicion de la luz direccional
-            directional.position.set(0,0,1)
 
             // Ambos tipos de iluminacion se agregan a la escena
             scene.add(ambient)
             scene.add(directional)
 
-            //Carga de obj
+            // Skydome
+            var loader = new THREE.TextureLoader();
+            loader.load(
+            "./Assets/Imagenes/skydome.jpg",
+            (texture)=>{
+                var objGeometry = new THREE.SphereBufferGeometry(75, 60, 60);
+                var objMaterial = new THREE.MeshPhongMaterial({
+                map: texture,
+                shading: THREE.FlatShading
+                });
+                objMaterial.side = THREE.BackSide;
+                var earthMesh = new THREE.Mesh(objGeometry, objMaterial);
+
+                scene.add(earthMesh);
+            })
+
+            // Diamantes
+            var radius = 4;
+            var height = 5;
+
+            var geometry = new THREE.CylinderGeometry(0, radius, height, 4, 1)
+            var material = new THREE.MeshBasicMaterial({
+                color: 0xFF0000
+            });
+            pyramid = new THREE.Mesh(geometry, material);
+            pyramid.rotation.z = THREE.Math.degToRad(180);
+
+            scene.add(pyramid);
+
+            //Carga de escenario
             loadOBJWithMTL(
                 //Carpeta donde esta el modelo,
-                'Assets/Modelos/Escenario/',
+                'Assets/Modelos/Escenario/Puente/',
                 // El archivo obj del modelo
-                'scaniverse-20210409-165615.obj',
+                'puente.obj',
                 // El archivo mtl
-                'scaniverse-20210409-165615.mtl',
+                'puente.mtl',
                 (miObjetoYaCargado) =>{
                     // Posicion del objeto en x y z
                     miObjetoYaCargado.position.z = 0
                     miObjetoYaCargado.position.x = 0
-                    miObjetoYaCargado.position.y = 0
+                    miObjetoYaCargado.position.y = -5.65
 
                     // Escala del objeto en x y z
-                    miObjetoYaCargado.scale.set(10,10,10)
+                    miObjetoYaCargado.scale.set(1,1,1)
 
                     // Nombre del objeto
                     miObjetoYaCargado.name = 'Escenario'
 
-                    scene.add(miObjetoYaCargado)
+                    var puente2 = miObjetoYaCargado.clone()
+                    puente2.position.y = -5.65 
+                    puente2.position.x = 4.5
+                    scene.add(puente2)
+                    // camera2.lookAt(puente2)
 
-                    camera2.lookAt(miObjetoYaCargado.position)
+                    var puente3 = miObjetoYaCargado.clone()
+                    puente3.position.y = -5.65 
+                    puente3.position.x = 4.5
+                    puente3.position.z = 15
+                    scene.add(puente3)
+
+                    var puente4 = miObjetoYaCargado.clone()
+                    puente4.position.y = -5.65
+                    puente4.position.x = 0
+                    puente4.position.z= 15
+                    scene.add(puente4)
+                    
+                    scene.add(miObjetoYaCargado)
                 }
             )
 
             // Carga de fbx
             var loader = new THREE.FBXLoader()
-            loader.load('Assets/frog-animation.fbx', function (personaje) {
+            loader.load('Assets/Modelos/Akai/arquero_animacion.fbx', function (personaje) {
                 // AnimationMixer es un reproductor de animaciones
                 personaje.mixer = new THREE.AnimationMixer(personaje)
 
@@ -148,35 +202,59 @@
                 // Aqui van las animaciones que se hicieron en maya
                 action = personaje.mixer.clipAction(personaje.animations[0])
                 action2 = personaje.mixer.clipAction(personaje.animations[1])
+                action3 = personaje.mixer.clipAction(personaje.animations[2])
 
-                // Asignamos las animaciones
-                // la de mayor peso es la que se va a reproducir
-                // NOTA: el peso menor es 0 y el mayor es 1
-                // se puede combinar pesos, por ejemplo ponerle a ambos .5
-                // entonces las animaciones se mezclarian
-                // action.weight = 0
-                // action2.weight = 1
+                action.play()
+                action2.play()
+                action3.play()
 
                 // le damos la posicion que queramos en x y z
-                personaje.position.z = -10
-                personaje.position.x = -10
-                personaje.position.y = +5
+                personaje.position.z = 0
+                personaje.position.x = 0
+                personaje.position.y = 0
 
                 // le asignamos una escala en x y z
-                personaje.scale.set(.15,.15,.15)
+                personaje.scale.set(.01,.01,.01)
 
                 // Le asignamos un nombre al modelo
-                personaje.name = 'frog'
+                personaje.name = 'player1'
+
+                // Posicion de la luz direccional
+                directional.lookAt(personaje.position)
+
+                personaje.add(pyramid)
+                pyramid.scale.set(3,3,3)
+                pyramid.position.y = 230
+                pyramid.position.z = 20
 
                 // Agregamos el personaje a la escena
                 scene.add(personaje)
 
             })
 
+            var tronco = new THREE.FBXLoader()
+            tronco.load('Assets/Modelos/Tronco/Log_fbx.fbx', function (personaje) {
+
+                // le damos la posicion que queramos en x y z
+                personaje.position.z = 20
+                personaje.position.x = 0
+                personaje.position.y = 0.3
+
+                // le asignamos una escala en x y z = ancho del puente
+                personaje.scale.set(.004,.004,.0035)
+
+                // Le asignamos un nombre al modelo
+                personaje.name = 'tronco'
+                personaje.rotation.y = THREE.Math.degToRad(90);
+
+                // Agregamos el personaje a la escena
+                scene.add(personaje)
+            })
+
             // Dibujamos un grid
-            var grid = new THREE.GridHelper(50, 10, 0xffffff, 0xffffff);
-		    grid.position.y = -1;
-		    scene.add(grid);
+            // var grid = new THREE.GridHelper(50, 10, 0xffffff, 0xffffff);
+		    // grid.position.y = -1;
+		    // scene.add(grid);
 
             document.addEventListener('keydown', onKeyDown);
 		    document.addEventListener('keyup', onKeyUp);
@@ -194,25 +272,11 @@
 
             delta = clock.getDelta()
 
-            // Mide el arreglo de mixers mientras no este vacio
-            // lo va a recorrer y hara el update de las animaciones
-            if (mixers.length > 0) {
-                for (let i = 0; i < mixers.length; i++) {
-                    mixers[i].update(delta)
-                }
-                if (flag) {
-                    action.weight = 0 
-                    action2.weight = 1
-
-                    flag = false
-                }else{
-                    action.weight = 1 
-                    action2.weight = 0
-                }
-            }
-
             var yaw = 0;
 		    var forward = 0;
+            var updown = 0;
+
+
             if (keys["A"]) {
 		    	yaw = 5;
 		    } else if (keys["D"]) {
@@ -222,19 +286,94 @@
 			    forward = -20;
 		    } else if (keys["S"]) {
 			    forward = 20;
+            }if(keys["Q"]){
+                updown = 5;
+            }else if(keys["E"]){
+                updown = -5;
             }
+
 			
 			camera.rotation.y += yaw * delta;
 			camera.translateZ(forward * delta);
+			camera.translateY(updown * delta);
+			
+            pyramid.rotation.y += 1 * delta;
 
-            // timer = timer + 1
-            // // console.log(timer)
+            // Animaciones
+            // Mide el arreglo de mixers mientras no este vacio
+            // lo va a recorrer y hara el update de las animaciones
+            if(mixers.length > 0){
+                for (let index = 0; index < mixers.length; index++) {
+                    mixers[index].update(delta);
+                }
+                if(flag == 1){
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 0
+
+                    flag = 0
+                }else if(flag == 2){
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 1
+
+                    flag = 0
+                }else{
+                    action.weight = 1
+                    action2.weight = 0
+                    action3.weight = 0
+                }
+            }
+
+            
+            // console.log(yaw)
+
+            timer = timer + 1
+            if(timer >= 100){
+                // Creamos un nombre unico para cada tronco
+                var nombre = "tronco" + indiceNombre
+                indiceNombre++
+                // Reseteamos el indice solamente para que no llegue al limite
+                // de la variable
+                if(indiceNombre > 100){
+                    indiceNombre = 0
+                }
+
+                // Obtenemos el tronco original y lo clonamos
+                var tronco = scene.getObjectByName('tronco')
+                var tronco2 = tronco.clone()
+                tronco2.position.z = 20
+                tronco2.position.y = 0.3
+                tronco2.position.x = 0
+                tronco2.name = nombre
+
+                // Metemos el tronco con name unico al arreglo de troncos
+                // y lo metemos a la escena
+                troncos.push(tronco2)
+                scene.add(tronco2)
+
+                timer = 0
+            }
+
+            troncos.forEach(tronquito => {
+                var tronco = scene.getObjectByName(tronquito.name)
+                tronco.rotation.z -= 9 * delta 
+                tronco.position.z -= 3 * delta
+
+                if(tronco.position.z <= -8){
+                    scene.remove(tronco)
+                    troncos.shift()
+                    
+                }
+            });
+
+            // console.log(troncos.length)
+            // console.log(timer)
             // if(timer == 100){
             //     console.log('x: ' + camera.position.x + " y: " + camera.position.y + " z: " + camera.position.z) 
             // }else if(timer > 200){
             //     timer = 0
             // }
-		
 
             moverPersonaje(delta)
             // Recibe como parametro que escena va a dibujar, y la camara que se va a utilizar
@@ -242,14 +381,14 @@
         }
 
         function moverPersonaje(delta){
-            var character = scene.getObjectByName('frog')
-
-            if (keys["W"]) {
-                flag = true
-                if(character.position.x > -15){
-                    character.position.x -= 10*delta
-                }   
+            var character = scene.getObjectByName('player1')
+            if (keys["C"]) {
+               flag = 1
             }
+            if (keys["V"]) {
+               flag = 2
+            }
+            
         }
 
         function onKeyDown(event) {
@@ -257,7 +396,8 @@
 	    }
 
 	    function onKeyUp(event) {
-		    keys[String.fromCharCode(event.keyCode)] = false;
+		    var key = keys[String.fromCharCode(event.keyCode)] = false;
+            // keys[key] = false;
 	    }
 
         function loadOBJWithMTL(path, objFile, mtlFile, onLoadCallback) {
@@ -276,6 +416,23 @@
     </script>
 </head>
 <body>
-    <div id="scene-section" />
+    <div id="scene-section">
+        <div class="score">
+            <div class="player">
+                <img src="./Assets/Imagenes/avatar01.png" alt="">
+                <div class="puntuacion">
+                    <h2 class="nombre">LordRikura</h2>
+                    <p>100</p>
+                </div>
+            </div>
+            <div class="player dos">
+                <img src="./Assets/Imagenes/avatar02.png" alt="">
+                <div class="puntuacion">
+                    <h2 class="nombre">Rome</h2>
+                    <p>100</p>
+                </div>
+            </div>       
+        </div>
+    </div>
 </body>
 </html>
