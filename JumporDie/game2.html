@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump or die</title>
+
+    <!-- Librerias necesarias -->
+    <link rel="stylesheet" href="./css/game.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+    <!-- CDN Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Three.js -->
+    <script type="text/javascript" src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/MTLLoader.js"></script>
+    <script type="text/javascript"src="js/libs/FBXLoader.js"></script>
+    <script type="text/javascript"src="js/libs/OBJLoader.js"></script>
+    <script type="text/javascript"src="js/libs/inflate.min.js"></script>
+    <script type="text/javascript"src="js/libs/Sky.js"></script>
+    <script type="text/javascript"src="js/libs/Water.js"></script>
+
+    <script type = "text/javascript">
+
+        // Variables globales
+        var scene
+        var renderer
+        var camera
+
+        var clock
+        var delta
+
+        var mixers = []
+        var action, action2, action3, actionA
+        var actionY, actionY2, actionY3
+
+        var keys = {}
+        var flag = 0
+        var flag2 = 0
+
+        var pyramid, pyramid2
+        var laseres = []
+
+        var indiceNombre = 0
+        var numeroAl
+
+        var worldready = [false, false, false]
+
+        $(document).ready(function () {
+
+            clock = new THREE.Clock()
+
+            // Tamano del canvas
+            var canvasSize = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+
+            // Inicializar el renderer
+            renderer = new THREE.WebGLRenderer()
+
+            //Limpiamos la pantalla
+            renderer.setClearColor(new THREE.Color(0,0,0))
+            renderer.setSize(
+                canvasSize.width,
+                canvasSize.height
+            )
+
+            // Inicializar la camara
+            camera = new THREE.PerspectiveCamera(
+                //Campo de vision
+                75,
+                //Relacion aspecto
+                canvasSize.width / canvasSize.height,
+                //Que tan cerca se va a ver
+                0.1,
+                // Que tan lejos se va a ver
+                100
+            )
+
+            camera2 = new THREE.PerspectiveCamera(
+                //Campo de vision
+                75,
+                //Relacion aspecto
+                canvasSize.width / canvasSize.height,
+                //Que tan cerca se va a ver
+                0.1,
+                // Que tan lejos se va a ver
+                100
+            )
+            // 0.07636858177216749 y: 3.5805250000157685 z: -5.654726153709754
+            camera2.position.x = 0
+            camera2.position.y = 2.4
+            camera2.position.z = -4.654726153709754
+            camera2.rotation.y = THREE.Math.degToRad(180);
+
+            // En caso de animacion de camara, camara inical 0, 10, 20
+
+            // Inicializamos la escena
+            scene = new THREE.Scene()
+
+            // Agregamos la etiquetada canvas dentro del Div
+            $('#scene-section').append(renderer.domElement)
+
+            // Iluminacion
+            var ambient = new THREE.AmbientLight(
+                // Color
+                new THREE.Color(.8,.8,.8),
+                // intensidad
+                1.0
+            )
+
+            var directional = new THREE.DirectionalLight(
+                // Color
+                new THREE.Color(.6,.6,.6),
+                // intensidad
+                0.4
+            )
+
+            // Ambos tipos de iluminacion se agregan a la escena
+            scene.add(ambient)
+            scene.add(directional)
+
+            const loaderT = new THREE.CubeTextureLoader();
+            const textureT = loaderT.load([
+                './Assets/Imagenes/Skybox2/penguins2/arid2_lf.jpg',
+                './Assets/Imagenes/Skybox2/penguins2/arid2_lf.jpg', //bk
+                './Assets/Imagenes/Skybox2/penguins2/arid2_up.jpg', //Arriba
+                './Assets/Imagenes/Skybox2/penguins2/arid2_dn.jpg', //Abajo
+                './Assets/Imagenes/Skybox2/penguins2/arid2_rt.jpg',//ft
+                './Assets/Imagenes/Skybox2/penguins2/arid2_ft.jpg', //rt
+            ]);
+            textureT.encoding = THREE.sRGBEncoding;
+            scene.background = textureT;
+          
+            var radius = 4;
+            var height = 5;
+
+            var geometry = new THREE.CylinderGeometry(0, radius, height, 4, 1)
+            var materialRojo = new THREE.MeshBasicMaterial({
+                color: 0xFF0000
+            });
+            var materialAmarillo = new THREE.MeshBasicMaterial({
+                color: 0xFFFF00
+            });
+
+            pyramid = new THREE.Mesh(geometry, materialRojo);
+            pyramid.rotation.z = THREE.Math.degToRad(180);
+
+            scene.add(pyramid);
+
+            // Carga de fbx
+            var player1 = new THREE.FBXLoader()
+            player1.load('Assets/Modelos/Caballero/Caballero_Animaciones.fbx', function (personaje) {
+                // AnimationMixer es un reproductor de animaciones
+                personaje.mixer = new THREE.AnimationMixer(personaje)
+
+                // El reproductor de animaciones de nuestro modelo
+                // entra al arreglo de mixers
+                mixers.push(personaje.mixer)
+
+                // Aqui van las animaciones que se hicieron en maya
+                action = personaje.mixer.clipAction(personaje.animations[0])
+                action2 = personaje.mixer.clipAction(personaje.animations[1])
+                action3 = personaje.mixer.clipAction(personaje.animations[2])
+
+                action.play()
+                action2.play()
+                action3.play()
+
+                // action.stop()
+
+                // le damos la posicion que queramos en x y z
+                personaje.position.z = 0
+                personaje.position.x = 0
+                personaje.position.y = 0
+
+                // le asignamos una escala en x y z
+                personaje.scale.set(.01,.01,.01)
+
+                // Le asignamos un nombre al modelo
+                personaje.name = 'player1'
+
+                // Posicion de la luz direccional
+                directional.lookAt(personaje.position)
+
+                personaje.add(pyramid)
+                pyramid.scale.set(3,3,3)
+                pyramid.position.y = 230
+                pyramid.position.z = 20
+
+                // camera2.lookAt(personaje)
+                // Agregamos el personaje a la escena
+                scene.add(personaje)
+
+                worldready[0] = true
+
+            })
+
+
+            var escenario = new THREE.FBXLoader()
+            escenario.load('Assets/Modelos/Escenario/Metro/metro.fbx', function (escenario) {
+
+                // le damos la posicion que queramos en x y z
+                escenario.position.z = 0
+                escenario.position.x = 0
+                escenario.position.y = 0.1
+
+                // le asignamos una escala en x y z = ancho del puente
+                escenario.scale.set(.005,.005,.005)
+
+                // Le asignamos un nombre al modelo
+                escenario.name = 'escenario'
+                escenario.rotation.y = THREE.Math.degToRad(90);
+                
+                var escenario2 = escenario.clone()
+                escenario2.position.z = 8
+                escenario2.position.x = 0
+                escenario2.position.y = 0.1
+                scene.add(escenario2)
+
+                var escenario3 = escenario.clone()
+                escenario3.position.z = 16
+                escenario3.position.x = 0
+                escenario3.position.y = 0.1
+                scene.add(escenario3)
+
+                var escenario4 = escenario.clone()
+                escenario4.position.z = 24
+                escenario4.position.x = 0
+                escenario4.position.y = 0.1
+                scene.add(escenario4)
+
+                // Agregamos el personaje a la escena
+                scene.add(escenario)
+
+                worldready[1] = true
+            })
+
+            var laser = new THREE.FBXLoader()
+            laser.load('Assets/Modelos/Laser/laserpuro.fbx', function (laser) {
+
+                // le damos la posicion que queramos en x y z
+                laser.position.z = 10
+                laser.position.x = 10
+                laser.position.y = .9
+
+                // le asignamos una escala en x y z = ancho del puente
+                laser.scale.set(.05,.05,.05)
+
+                // Le asignamos un nombre al modelo
+                laser.name = 'laser'
+                laser.rotation.y = THREE.Math.degToRad(90);
+                
+    
+
+                // Agregamos el personaje a la escena
+                scene.add(laser)
+                worldready[2] = true
+            })
+
+            
+            // Dibujamos un grid
+            // var grid = new THREE.GridHelper(50, 10, 0xffffff, 0xffffff);
+		    // grid.position.y = -1;
+		    // scene.add(grid);
+
+            document.addEventListener('keydown', onKeyDown);
+		    document.addEventListener('keyup', onKeyUp);
+
+            timer = 0
+
+            // Mandamos llamar la funcion render
+            render()
+        })
+
+        function init() {
+            
+        }
+        
+        function render() {
+            //Recibe como parametro la funcion padre
+            // Se llama arias veces (update)
+            requestAnimationFrame(render)
+
+            if(worldready[0] && worldready[1] && worldready[2]){
+                $('#loading').fadeOut(1000)
+                timer = timer + 1
+
+            }
+
+            delta = clock.getDelta()
+
+            var yaw = 0;
+		    var forward = 0;
+            var updown = 0;
+
+
+            if (keys["A"]) {
+		    	yaw = 5;
+		    } else if (keys["D"]) {
+			    yaw = -5;
+		    }
+		    if (keys["W"]) {
+			    forward = -20;
+		    } else if (keys["S"]) {
+			    forward = 20;
+            }if(keys["Q"]){
+                updown = 5;
+            }else if(keys["E"]){
+                updown = -5;
+            }
+
+			
+			camera.rotation.y += yaw * delta;
+			camera.translateZ(forward * delta);
+			camera.translateY(updown * delta);
+			
+            pyramid.rotation.y += 1 * delta;
+
+            if(mixers.length > 0){
+                for (let index = 0; index < mixers.length; index++) {
+                    mixers[index].update(delta);
+                }
+                // Player 1
+                if(flag == 1){ //Accion 2
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 0
+                    action2.play()
+
+                    
+                    flag = 0
+                     
+                }else if(flag == 2){ //Accion 3
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 1
+                   action3.play()
+
+
+                    flag = 0
+                }else{ //Idle
+                    action.weight = 1
+                    action2.weight = 0
+                    action3.weight = 0
+                    action2.stop();
+                    action3.stop();
+                }
+            }
+
+            if(timer >= 100){
+                // Creamos un nombre unico para cada tronco
+                var nombre = "objeto" + indiceNombre
+                indiceNombre++
+                // Reseteamos el indice solamente para que no llegue al limite
+                // de la variable
+                if(indiceNombre > 100){
+                    indiceNombre = 0
+                }
+
+                var objeto
+                var objetoClone
+                numeroAl = aleatorio(0,1)
+                if(numeroAl == 0){
+                    // Obtenemos el tronco original y lo clonamos
+                    objeto = scene.getObjectByName('laser')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 10
+                    objetoClone.position.y = 0.1
+                    objetoClone.position.x = 10
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    laseres.push(objetoClone)
+                }else{
+                    objeto = scene.getObjectByName('laser')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 10
+                    objetoClone.position.y = .85
+                    objetoClone.position.x = 10
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    laseres.push(objetoClone)
+                }
+
+                // y lo metemos a la escena 
+                scene.add(objetoClone)
+
+                timer = 0
+            }
+
+            laseres.forEach(laser =>{
+                var ElLaser = scene.getObjectByName(laser.name)
+                ElLaser.position.z -= 3 * delta
+            
+                if(ElLaser.position.z <= -10){
+                    scene.remove(ElLaser)
+                    laseres.shift()
+                }
+            })
+
+            moverPersonaje(delta)
+           
+            renderer.render(scene, camera2)
+        }
+
+        function moverPersonaje(delta){
+            var character = scene.getObjectByName('player1')
+            // Player 1
+            if (keys["C"]) {
+               flag = 1
+            //    action2.play()
+            //    action2.setLoop( THREE.LoopOnce);
+            }
+            if (keys["V"]) {
+               flag = 2
+            //    action3.play()
+            //    action3.setLoop( THREE.LoopOnce);
+            }          
+        }
+
+        function onKeyDown(event) {
+		    keys[String.fromCharCode(event.keyCode)] = true;
+	    }
+
+	    function onKeyUp(event) {
+		    var key = keys[String.fromCharCode(event.keyCode)] = false;
+	    }
+
+        function loadOBJWithMTL(path, objFile, mtlFile, onLoadCallback) {
+            var mtlLoader = new THREE.MTLLoader()
+            mtlLoader.setPath(path)
+
+            mtlLoader.load(mtlFile,(material)=>{
+                var objLoader = new THREE.OBJLoader()
+                objLoader.setPath(path)
+                objLoader.setMaterials(material)
+                objLoader.load(objFile,(object3d)=>{
+                    onLoadCallback(object3d)
+                })
+            })
+        }
+
+        function aleatorio(minimo,maximo){
+            return Math.floor(Math.random() * ((maximo+1)-minimo)+minimo);
+        }
+    
+    </script>
+</head>
+<body>
+    <audio src="tren.mp3" autostart="1" loop="1" volume="80" width="0" height="0" ></audio>
+    <div id="loading" class="loading">
+        <h2>Cargando...</h2>
+        <img src="./Assets/Imagenes/Loading_2.gif" alt="">
+    </div>
+    <div id="scene-section">
+        <div class="score">
+            <div class="player">
+                <img src="./Assets/Imagenes/avatar01.png" alt="">
+                <div class="puntuacion">
+                    <h2 class="nombre">LordRikura</h2>
+                    <p>100</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
