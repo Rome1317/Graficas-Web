@@ -1,3 +1,4 @@
+const fs = firebase.firestore()
 //Sign up
 const signupForm = document.querySelector('#signup-form')
 
@@ -7,13 +8,37 @@ signupForm.addEventListener('submit',e=>{
     const signupEmail = document.querySelector('#signup-email').value
     const signupPassword = document.querySelector('#signup-password').value
     const signupUsername = document.querySelector('#signup-username').value
+    
+    /*
+    const taskForm = document.getElementById('signup-form');
+
+    const username = taskForm['signup-username'].value;
+    const email = taskForm['signup-email'].value;
+
+    fs.collection('usuarios').doc.set({
+        username,
+        email
+    })*/
 
     auth
         .createUserWithEmailAndPassword(signupEmail, signupPassword)
         .then(userCredential =>{
             signupForm.reset()
+
+            fs.collection('usuarios').doc(auth.currentUser.uid)
+            .set({
+                username: signupUsername,
+                email: signupEmail
+            })
+            .catch(error => {
+                console.log('Algo salio mal en firestore: ', error);
+            })
+
+
             console.log('signup')
         })
+
+        
 })
 
 //Sign in
@@ -27,11 +52,11 @@ signinForm.addEventListener('submit',e=>{
     auth
         .signInWithEmailAndPassword(email, password)
         .then(userCredential =>{
-            signupForm.reset()
+            signinForm.reset()
             console.log('signin')
         })
 })
-
+    
 //logout
 const logout = document.querySelector('#logout')
 
@@ -40,4 +65,20 @@ logout.addEventListener('click',e=>{
     auth.signOut().then(()=>{
         console.log('loguot')
     })
+})
+
+
+
+//Events
+//list for auth changes
+auth.onAuthStateChanged(user => {
+    if(user){
+        console.log('auth: sign in')
+
+        /*fs.collection('posts').get().then((snapshot)=>{
+            console.log(snapshot)
+        })*/
+    }else {
+        console.log('auth:sign out')
+    }
 })

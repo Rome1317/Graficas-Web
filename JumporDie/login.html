@@ -8,6 +8,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./css/login.css">
     <!-- <link rel="stylesheet" href="index.css"> -->
+ 
 
     <title>Login</title>
 </head>
@@ -22,7 +23,7 @@
                   </h1>
                 </div>
                 <div class='control block-cube block-input'>
-                  <input name='username' placeholder='Username' type='text' id="login-username">
+                  <input name='username' placeholder='email' type='text' id="login-username">
                   <div class='bg-top'>
                     <div class='bg-inner'></div>
                   </div>
@@ -142,6 +143,10 @@
     <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-app.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+    <!--FireStore-->
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+    <!--Realtime Database-->
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-database.js"></script>
 
 
     <!-- TODO: Add SDKs for Firebase products that you want to use
@@ -165,6 +170,8 @@
         firebase.analytics();
 
         const auth = firebase.auth();
+        //const fs = firebase.firestore();
+
     </script>
 
     <!-- Custom code -->
