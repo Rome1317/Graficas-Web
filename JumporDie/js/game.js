@@ -377,6 +377,17 @@ function render() {
         timer = timer + 1
     }
 
+    //Moviemiento de los personajes
+    firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+        if(snapshot.val().jump){
+            flag2 = 1
+        }
+
+        if(snapshot.val().squad){
+            flag2 = 2
+        }
+    })
+
     delta = clock.getDelta()
 
     var yaw = 0;
@@ -603,13 +614,6 @@ function moverPersonaje(delta){
     //    action3.play()
     //    action3.setLoop( THREE.LoopOnce);
     }
-    if (keys["O"]) {
-    flag2 = 1
-    }
-    if (keys["L"]) {
-    flag2 = 2
-    }
-    
 }
 
 function onKeyDown(event) {
