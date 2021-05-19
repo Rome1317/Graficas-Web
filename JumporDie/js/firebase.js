@@ -16,15 +16,25 @@ var p1_nombre = document.querySelector("#p1-nombre")
 var p2_nombre = document.getElementById('p2-nombre');
 var prueba = "";
 
-// var dbRef = firebase.database().ref('LordRikura').set({
-//     username: 'LordRikura',
-//     point: 130
-// });
+//GUARDANDO
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        var dbRef = firebase.database().ref('jugadores/' + user.uid).set({
+            username: user.email,
+            point: 0
+        });
+    } else {
+      // No user is signed in.
+    }
+});
 
-var dbRef = firebase.database().ref('LordRikura').on('value', function (snapshot) {
-    alert(snapshot.val().username)
-    p1_nombre.innerHTML = snapshot.val().username
-})
+
+
+//LEER
+// var dbRef = firebase.database().ref('LordRikura').on('value', function (snapshot) {
+//     alert(snapshot.val().username)
+//     p1_nombre.innerHTML = snapshot.val().username
+// })
 
 // var messageRef = dbRef.ref('message')
 
