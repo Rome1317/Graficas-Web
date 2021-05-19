@@ -1,4 +1,4 @@
- // Your web app's Firebase configuration
+// Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 var firebaseConfig = {
     apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
@@ -21,8 +21,28 @@ firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
         var dbRef = firebase.database().ref('jugadores/' + user.uid).set({
             username: user.email,
-            point: 0
+            point: 10,
+            jump: false,
+            squad: false
         });
+
+        const db = firebase.firestore()
+
+        //Traer nombre del firebase user.uid == al que se busca en firestore
+        var docRef = db.collection("usuarios").doc(user.uid);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                // p1_nombre.innerHTML = user.username
+                console.log("Document data:", doc.data());
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        
     } else {
       // No user is signed in.
     }
