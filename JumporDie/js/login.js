@@ -53,6 +53,27 @@ signinForm.addEventListener('submit',e=>{
         .signInWithEmailAndPassword(email, password)
         .then(userCredential =>{
             signinForm.reset()
+            
+            // var docRef = fs.collection("usuarios").doc(auth.currentUser.uid);
+            // docRef.get().then((doc) => {
+            //     if (doc.exists) {
+            //         console.log("Document data:", doc.data());
+            //     } else {
+            //         // doc.data() will be undefined in this case
+            //         console.log("No such document!");
+            //     }
+            // }).catch((error) => {
+            //     console.log("Error getting document:", error);
+            // });
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                  console.log(user.email)
+                } else {
+                  // No user is signed in.
+                }
+              });
+
             console.log('signin')
         })
 })
