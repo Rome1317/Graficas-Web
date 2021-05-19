@@ -13,17 +13,27 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var p1_nombre = document.querySelector("#p1-nombre")
-var p2_nombre = document.getElementById('p2-nombre');
+var p1_score = document.querySelector("#p1-score")
+var p2_nombre = document.querySelector("#p2-nombre");
+var p2_score = document.querySelector("#p2-score");
 var prueba = "";
+
+var indicez = 0
+var arregloNombres = []
+var userID 
+var userID2
 
 //GUARDANDO
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
+        userID = user.uid
+        //Agrego un jugador
         var dbRef = firebase.database().ref('jugadores/' + user.uid).set({
             username: user.email,
             point: 10,
             jump: false,
-            squad: false
+            squad: false,
+            ready: false
         });
 
         const db = firebase.firestore()
@@ -33,22 +43,35 @@ firebase.auth().onAuthStateChanged(function(user) {
 
         docRef.get().then((doc) => {
             if (doc.exists) {
-                // p1_nombre.innerHTML = user.username
-                console.log("Document data:", doc.data());
+                p1_nombre.innerHTML = doc.data().username
+                var dbRef2 = firebase.database().ref('jugadores/' + user.uid).on('value', function (snapshot){
+                    p1_score.innerHTML = snapshot.val().point
+                    // console.log('PUNTOS: ' + snapshot.val().point)
+                })
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
             }
         }).catch((error) => {
             console.log("Error getting document:", error);
-        });
-        
+        })        
     } else {
       // No user is signed in.
     }
 });
 
-
+function getPlayers() {
+    var dbRef2 = firebase.database().ref('jugadores/').on('value', function (snapshot){
+        var i = 0
+        var object = JSON.stringify(snapshot.val())
+        JSON.parse(object, function (k,v){
+            if (i % 5 == 0 && i !=  0 && k != null) {
+                arregloNombres.push(k)
+            }
+            i = i + 1;
+        })
+    })
+}
 
 //LEER
 // var dbRef = firebase.database().ref('LordRikura').on('value', function (snapshot) {
