@@ -36,6 +36,25 @@ firebase.auth().onAuthStateChanged(function(user) {
             ready: false
         });
 
+        // var dbRef2 = firebase.database().ref('jugadores/').on('value', function (snapshot){
+        //     snapshot.forEach((child) => {
+        //         var flag = true
+        //         arregloNombres.forEach(e =>{
+        //             if(e == child.key){
+        //                 flag = false
+        //             }
+        //         })
+
+        //         if(flag){
+        //             debugger
+        //             arregloNombres.push(child.key);
+        //         }
+                
+        //     });
+        // })
+
+        getPlayers()
+
         const db = firebase.firestore()
 
         //Traer nombre del firebase user.uid == al que se busca en firestore
@@ -62,14 +81,20 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 function getPlayers() {
     var dbRef2 = firebase.database().ref('jugadores/').on('value', function (snapshot){
-        var i = 0
-        var object = JSON.stringify(snapshot.val())
-        JSON.parse(object, function (k,v){
-            if (i % 5 == 0 && i !=  0 && k != null) {
-                arregloNombres.push(k)
+        snapshot.forEach((child) => {
+            var flag = true
+            arregloNombres.forEach(e =>{
+                if(e == child.key){
+                    flag = false
+                }
+            })
+
+            if(flag){
+                debugger
+                arregloNombres.push(child.key);
             }
-            i = i + 1;
-        })
+            
+        });
     })
 }
 
