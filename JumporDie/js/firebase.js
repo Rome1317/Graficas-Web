@@ -90,7 +90,6 @@ function getPlayers() {
             })
 
             if(flag){
-                debugger
                 arregloNombres.push(child.key);
             }
             

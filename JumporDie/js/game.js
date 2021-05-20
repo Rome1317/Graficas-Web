@@ -230,7 +230,7 @@
 
 
     var player2 = new THREE.FBXLoader()
-    player2.load('Assets/Modelos/Akai/arquero_animacion.fbx', function (personaje) {
+    player2.load('Assets/Modelos/Caballero/Caballero_Animaciones.fbx', function (personaje) {
         // AnimationMixer es un reproductor de animaciones
         personaje.mixer = new THREE.AnimationMixer(personaje)
 
@@ -366,248 +366,238 @@ function render() {
                 }
             })
 
-            console.log(userID2)
+            const db = firebase.firestore()
+
+            var docRef = db.collection("usuarios").doc(userID2);
+
+            docRef.get().then((doc) => {
+                if (doc.exists) {
+                    p2_nombre.innerHTML = doc.data().username
+                    var dbRef2 = firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                        flagReadyMundo2 = snapshot.val().ready
+                        p2_score.innerHTML = snapshot.val().point
+                    })
+                } else {
+                    // doc.data() will be undefined in this case
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            })     
         }
 
-          // else{
-        //     //Ya estan los dos players conectads
-        //     for (let index = 0; index < arregloNombres.length; index++) {
-        //         if(arregloNombres[index] != userID){
-        //             userID2 = arregloNombres[index]
-        //         }
-        //     }
+        if(flagReadyMundo2){
+            $('#loading').fadeOut(1000)
+            timer = timer + 1
 
-        //     var dbRef2 = firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
-        //         flagReadyMundo2 = snapshot.val().ready
-        //         p2_score.innerHTML = snapshot.val().point
-        //         p2_nombre.innerHTML = snapshot.val().username
-        //     })
-
-
-        $('#loading').fadeOut(1000)
-        timer = timer + 1
-
-
-        delta = clock.getDelta()
-
-        var yaw = 0;
-        var forward = 0;
-        var updown = 0;
-
-
-        if (keys["A"]) {
-            yaw = 5;
-        } else if (keys["D"]) {
-            yaw = -5;
-        }
-        if (keys["W"]) {
-            forward = -20;
-        } else if (keys["S"]) {
-            forward = 20;
-        }if(keys["Q"]){
-            updown = 5;
-        }else if(keys["E"]){
-            updown = -5;
-        }
-
+            firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                if(snapshot.val().jump){
+                    flag2 = 1
+                }
         
-        camera.rotation.y += yaw * delta;
-        camera.translateZ(forward * delta);
-        camera.translateY(updown * delta);
-        
-        pyramid.rotation.y += 1 * delta;
-        pyramid2.rotation.y += 1 * delta;
+                if(snapshot.val().squad){
+                    flag2 = 2
+                }
+            })
 
-        // Animaciones
-        // Mide el arreglo de mixers mientras no este vacio
-        // lo va a recorrer y hara el update de las animaciones
-        if(mixers.length > 0){
-            for (let index = 0; index < mixers.length; index++) {
-                mixers[index].update(delta);
+            delta = clock.getDelta()
+
+            var yaw = 0;
+            var forward = 0;
+            var updown = 0;
+
+
+            if (keys["A"]) {
+                yaw = 5;
+            } else if (keys["D"]) {
+                yaw = -5;
             }
-            // Player 1
-            if(flag == 1){ //Accion 2
-                action.weight = 0
-                action2.weight = 1
-                action3.weight = 0
-                action2.play()
-
-                
-                flag = 0
-                
-            }else if(flag == 2){ //Accion 3
-                action.weight = 0
-                action2.weight = 1
-                action3.weight = 1
-                action3.play()
-                
-
-                flag = 0
-            }else{ //Idle
-                action.weight = 1
-                action2.weight = 0
-                action3.weight = 0
-                action2.stop();
-                action3.stop();
-
-                firebase.database().ref('jugadores/' + userID).update({
-                    jump: false,
-                    squad: false
-                });
+            if (keys["W"]) {
+                forward = -20;
+            } else if (keys["S"]) {
+                forward = 20;
+            }if(keys["Q"]){
+                updown = 5;
+            }else if(keys["E"]){
+                updown = -5;
             }
 
-            // Player 2
-            if(flag2 == 1){
-                actionY.weight = 0
-                actionY2.weight = 1
-                actionY3.weight = 0
-
-                flag2 = 0
-            }else if(flag2 == 2){
-                actionY.weight = 0
-                actionY2.weight = 1
-                actionY3.weight = 1
-
-                flag2 = 0
-            }else{
-                actionY.weight = 1
-                actionY2.weight = 0
-                actionY3.weight = 0
-            }
-        }
-
-
-        if(timer >= 100){
-            // Creamos un nombre unico para cada tronco
-            var nombre = "objeto" + indiceNombre
-            indiceNombre++
-            // Reseteamos el indice solamente para que no llegue al limite
-            // de la variable
-            if(indiceNombre > 100){
-                indiceNombre = 0
-            }
-
-            var objeto
-            var objetoClone
-            var objetoClone2
-            numeroAl = aleatorio(0,1)
-            if(numeroAl == 0){
-                // Obtenemos el tronco original y lo clonamos
-                objeto = scene.getObjectByName('tronco')
-                objetoClone = objeto.clone()
-                objetoClone.position.z = 20
-                objetoClone.position.y = 0.3
-                objetoClone.position.x = 0
-                objetoClone.name = nombre
-                // Metemos el tronco con name unico al arreglo de troncos
-                troncos.push(objetoClone)
-
-                objetoClone2 = objeto.clone()
-                objetoClone2.position.z = 20
-                objetoClone2.position.y = 0.3
-                objetoClone2.position.x = 4
-                objetoClone2.name = nombre + "1"
-                // Metemos el tronco con name unico al arreglo de troncos
-                troncos2.push(objetoClone2)
-
-            }else{
-                objeto = scene.getObjectByName('aguila')
-                objetoClone = objeto.clone()
-                objetoClone.position.z = 20
-                objetoClone.position.y = 1.8
-                objetoClone.position.x = 0
-                objetoClone.name = nombre
-                // Metemos el tronco con name unico al arreglo de troncos
-                aguilas.push(objetoClone)
-
-                objetoClone2 = objeto.clone()
-                objetoClone2.position.z = 20
-                objetoClone2.position.y = 1.8
-                objetoClone2.position.x = 4
-                objetoClone2.name = nombre + "1"
-                // Metemos el tronco con name unico al arreglo de troncos
-                aguilas2.push(objetoClone2)
-            }
-
-            // y lo metemos a la escena 
-            scene.add(objetoClone)
-            scene.add(objetoClone2)
-
-            timer = 0
-        }
-
-        troncos.forEach(tronquito => {
-            var tronco = scene.getObjectByName(tronquito.name)
             
-            tronco.position.z -= 3 * delta
-            tronco.rotation.z -= 9 * delta 
-
-            if(tronco.position.z <= -8){
-                scene.remove(tronco)
-                troncos.shift()
-                
-            }
-        });
-
-        troncos2.forEach(tronquito => {
-            var tronco = scene.getObjectByName(tronquito.name)
+            camera.rotation.y += yaw * delta;
+            camera.translateZ(forward * delta);
+            camera.translateY(updown * delta);
             
-            tronco.position.z -= 3 * delta
-            tronco.rotation.z -= 9 * delta 
+            pyramid.rotation.y += 1 * delta;
+            pyramid2.rotation.y += 1 * delta;
 
-            if(tronco.position.z <= -8){
-                scene.remove(tronco)
-                troncos2.shift()
+            // Animaciones
+            // Mide el arreglo de mixers mientras no este vacio
+            // lo va a recorrer y hara el update de las animaciones
+            if(mixers.length > 0){
+                for (let index = 0; index < mixers.length; index++) {
+                    mixers[index].update(delta);
+                }
+                // Player 1
+                if(flag == 1){ //Accion 2
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 0
+                    action2.play()
+
+                    
+                    flag = 0
+                    
+                }else if(flag == 2){ //Accion 3
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 1
+                    action3.play()
+                    
+
+                    flag = 0
+                }else{ //Idle
+                    action.weight = 1
+                    action2.weight = 0
+                    action3.weight = 0
+                    action2.stop();
+                    action3.stop();
+
+                    firebase.database().ref('jugadores/' + userID).update({
+                        jump: false,
+                        squad: false
+                    });
+                }
+
+                // Player 2
+                if(flag2 == 1){
+                    actionY.weight = 0
+                    actionY2.weight = 1
+                    actionY3.weight = 0
+
+                    flag2 = 0
+                }else if(flag2 == 2){
+                    actionY.weight = 0
+                    actionY2.weight = 1
+                    actionY3.weight = 1
+
+                    flag2 = 0
+                }else{
+                    actionY.weight = 1
+                    actionY2.weight = 0
+                    actionY3.weight = 0
+                }
+            }
+
+
+            if(timer >= 100){
+                // Creamos un nombre unico para cada tronco
+                var nombre = "objeto" + indiceNombre
+                indiceNombre++
+                // Reseteamos el indice solamente para que no llegue al limite
+                // de la variable
+                if(indiceNombre > 100){
+                    indiceNombre = 0
+                }
+
+                var objeto
+                var objetoClone
+                var objetoClone2
+                numeroAl = aleatorio(0,1)
+                if(numeroAl == 0){
+                    // Obtenemos el tronco original y lo clonamos
+                    objeto = scene.getObjectByName('tronco')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 20
+                    objetoClone.position.y = 0.3
+                    objetoClone.position.x = 0
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    troncos.push(objetoClone)
+
+                    objetoClone2 = objeto.clone()
+                    objetoClone2.position.z = 20
+                    objetoClone2.position.y = 0.3
+                    objetoClone2.position.x = 4
+                    objetoClone2.name = nombre + "1"
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    troncos2.push(objetoClone2)
+
+                }else{
+                    objeto = scene.getObjectByName('aguila')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 20
+                    objetoClone.position.y = 1.8
+                    objetoClone.position.x = 0
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    aguilas.push(objetoClone)
+
+                    objetoClone2 = objeto.clone()
+                    objetoClone2.position.z = 20
+                    objetoClone2.position.y = 1.8
+                    objetoClone2.position.x = 4
+                    objetoClone2.name = nombre + "1"
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    aguilas2.push(objetoClone2)
+                }
+
+                // y lo metemos a la escena 
+                scene.add(objetoClone)
+                scene.add(objetoClone2)
+
+                timer = 0
+            }
+
+            troncos.forEach(tronquito => {
+                var tronco = scene.getObjectByName(tronquito.name)
                 
-            }
-        });
+                tronco.position.z -= 3 * delta
+                tronco.rotation.z -= 9 * delta 
 
-        aguilas.forEach(aguilita =>{
-            var aguila = scene.getObjectByName(aguilita.name)
-            aguila.position.z -= 3 * delta
-        
-            if(aguila.position.z <= -10){
-                scene.remove(aguila)
-                aguilas.shift()
-            }
-        })
+                if(tronco.position.z <= -8){
+                    scene.remove(tronco)
+                    troncos.shift()
+                    
+                }
+            });
 
-        aguilas2.forEach(aguilita =>{
-            var aguila = scene.getObjectByName(aguilita.name)
-            aguila.position.z -= 3 * delta
-        
-            if(aguila.position.z <= -10){
-                scene.remove(aguila)
-                aguilas2.shift()
-            }
-        })
-        
+            troncos2.forEach(tronquito => {
+                var tronco = scene.getObjectByName(tronquito.name)
+                
+                tronco.position.z -= 3 * delta
+                tronco.rotation.z -= 9 * delta 
+
+                if(tronco.position.z <= -8){
+                    scene.remove(tronco)
+                    troncos2.shift()
+                    
+                }
+            });
+
+            aguilas.forEach(aguilita =>{
+                var aguila = scene.getObjectByName(aguilita.name)
+                aguila.position.z -= 3 * delta
+            
+                if(aguila.position.z <= -10){
+                    scene.remove(aguila)
+                    aguilas.shift()
+                }
+            })
+
+            aguilas2.forEach(aguilita =>{
+                var aguila = scene.getObjectByName(aguilita.name)
+                aguila.position.z -= 3 * delta
+            
+                if(aguila.position.z <= -10){
+                    scene.remove(aguila)
+                    aguilas2.shift()
+                }
+            })
+            
+        }
+
+
     }
-
-    // if(flagReadyMundo2){
-       
-    // }
-
-    // //Moviemiento de los personajes
-    // firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
-    //     if(snapshot.val().jump){
-    //         flag2 = 1
-    //     }
-
-    //     if(snapshot.val().squad){
-    //         flag2 = 2
-    //     }
-    // })
-
-    
-
-    // console.log(troncos.length)
-    // console.log(timer)
-    // if(timer == 100){
-    //     console.log('x: ' + camera.position.x + " y: " + camera.position.y + " z: " + camera.position.z) 
-    // }else if(timer > 200){
-    //     timer = 0
-    // }
 
     moverPersonaje(delta)
     // Recibe como parametro que escena va a dibujar, y la camara que se va a utilizar
