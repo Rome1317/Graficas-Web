@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump or die</title>
+</head>
+<body>
+    <audio src="tren.mp3" autostart="1" loop="1" volume="80" width="0" height="0" ></audio>
+    <div id="loading" class="loading">
+        <h2>Cargando...</h2>
+        <img src="./Assets/Imagenes/Loading_2.gif" alt="">
+    </div>
+    <div id="scene-section">
+        <div class="score">
+            <div class="player">
+                <img src="./Assets/Imagenes/avatar01.png" alt="">
+                <div class="puntuacion">
+                    <h2 id="p1-nombre" class="nombre"></h2>
+                    <p id="p1-score">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Librerias necesarias -->
+    <link rel="stylesheet" href="./css/game.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+    <!-- CDN Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Three.js -->
+    <script type="text/javascript" src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/MTLLoader.js"></script>
+    <script type="text/javascript"src="js/libs/FBXLoader.js"></script>
+    <script type="text/javascript"src="js/libs/OBJLoader.js"></script>
+    <script type="text/javascript"src="js/libs/inflate.min.js"></script>
+    <script type="text/javascript"src="js/libs/Sky.js"></script>
+    <script type="text/javascript"src="js/libs/Water.js"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+
+    <script type = "text/javascript" src="./js/singleplayer.js"></script>
+</body>
+</html>

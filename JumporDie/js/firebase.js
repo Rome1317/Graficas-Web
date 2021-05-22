@@ -30,28 +30,12 @@ firebase.auth().onAuthStateChanged(function(user) {
         //Agrego un jugador
         var dbRef = firebase.database().ref('jugadores/' + user.uid).set({
             username: user.email,
-            point: 10,
+            point: 0,
             jump: false,
             squad: false,
             ready: false
         });
 
-        // var dbRef2 = firebase.database().ref('jugadores/').on('value', function (snapshot){
-        //     snapshot.forEach((child) => {
-        //         var flag = true
-        //         arregloNombres.forEach(e =>{
-        //             if(e == child.key){
-        //                 flag = false
-        //             }
-        //         })
-
-        //         if(flag){
-        //             debugger
-        //             arregloNombres.push(child.key);
-        //         }
-                
-        //     });
-        // })
 
         getPlayers()
 
@@ -65,7 +49,6 @@ firebase.auth().onAuthStateChanged(function(user) {
                 p1_nombre.innerHTML = doc.data().username
                 var dbRef2 = firebase.database().ref('jugadores/' + user.uid).on('value', function (snapshot){
                     p1_score.innerHTML = snapshot.val().point
-                    // console.log('PUNTOS: ' + snapshot.val().point)
                 })
             } else {
                 // doc.data() will be undefined in this case
