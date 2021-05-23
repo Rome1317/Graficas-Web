@@ -43,6 +43,8 @@ var camera
 var camera2
 var cameraPies
 
+var pausa = false
+
 var clock
 var delta
 
@@ -67,6 +69,9 @@ var puntuacion = 0
 var p1_score = document.querySelector("#p1-score")
 
 $(document).ready(function () {
+
+
+ 
 
     clock = new THREE.Clock()
 
@@ -329,21 +334,27 @@ $(document).ready(function () {
     timer = 0
 
     // Mandamos llamar la funcion render
+    
     render()
+    
 })
 
 function render() {
+    
     //Recibe como parametro la funcion padre
     // Se llama arias veces (update)
+    if(!pausa){
     requestAnimationFrame(render)
-
+    }
     var personaje1 = scene.getObjectByName("player1")
 
 
     if(worldready[0] && worldready[1] && worldready[2]){
         p1_score.innerHTML = puntuacion
         $('#loading').fadeOut(1000)
-        timer = timer + 1
+           
+            timer = timer + 1
+           
     }
 
     if(personaje1 != null && personaje1.position.z <= -3.5 ){
@@ -547,6 +558,7 @@ function render() {
     
 
     renderer.render(scene, camera2)
+
 }
 
 function moverPersonaje(delta){

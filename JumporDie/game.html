@@ -5,8 +5,74 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jump or die</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+    <style>
+        .clasecentro{
+            align-content: center;
+            text-align: center;
+            
+        }
+    </style>
+
 </head>
 <body>
+
+<!--MODALES-->
+<div class="modal fade " tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header justify-content-center">
+        <h4 class="modal-title ">PAUSA</h4>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal2">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <!--<div class="modal-header">
+        <h4 class="modal-title">Modal title</h4>
+        </div>-->
+        <div class="modal-body">
+            
+            
+
+                <ul class="list-group" id="listaHighScores">
+                    <li class="list-group-item active" style="background: crimson; ">PUNTUACIONES</li>
+                    <!--<li class="list-group-item clasecentro">LordRikura : 900</li>
+                    <li class="list-group-item clasecentro">Romeneitor : 899</li>
+                    <li class="list-group-item clasecentro">Dijillotron : 898</li>-->
+                  </ul>
+
+        </div>
+        <div class="modal-footer">
+
+            
+
+<div style="width:20% ; border-radius: 10%; ">
+    <a class="twitter-share-button"
+    href="https://twitter.com/intent/tweet?text=Hola%20Donato"
+    data-size="large"><img style="width: 30%;" src="https://cdn.cms-twdigitalassets.com/content/dam/help-twitter/twitter_logo_blue.png.twimg.768.png"></img>
+    
+Tweet</a>
+</div>
+            
+        <button type="button" class="btn btn-default" data-dismiss="modal">Volver a Jugar</button>
+        <button type="button" class="btn btn-primary">Regresar Al Menu</button>
+        
+        </div>
+    </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--FIN MODALES-->
+
+
     <div id="loading" class="loading">
         <h2>Cargando...</h2>
         <img src="./Assets/Imagenes/Loading_2.gif" alt="">
@@ -33,8 +99,14 @@
     <link rel="stylesheet" href="./css/game.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+
+
     <!-- CDN Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--Bootstrap-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
     <!-- Three.js -->
     <script type="text/javascript" src="js/libs/three2.js"></script>
     <script type="text/javascript"src="js/libs/three2.js"></script>

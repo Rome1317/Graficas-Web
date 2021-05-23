@@ -29,6 +29,17 @@
  
  $(document).ready(function () {
 
+
+    //CODIGO BOTONES VENTANAS MODALES
+    if (e.key === "Escape") { // escape key maps to keycode `27`
+        $('#myModal').modal('toggle')
+    }
+    if (e.key === "e" || e.key === "E") { // tecla e
+        $('#myModal2').modal('toggle')
+    }
+    //FIN
+
+
     clock = new THREE.Clock()
 
     // Tamano del canvas
