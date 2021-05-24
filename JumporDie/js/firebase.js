@@ -23,6 +23,7 @@ var arregloNombres = []
 var userID 
 var userID2
 var arregloONLINE = []
+var ix=0
 
 function aleatorioF(minimo,maximo){
     return Math.floor(Math.random() * ((maximo+1)-minimo)+minimo);

@@ -394,6 +394,7 @@ function render() {
 
         if(arregloNombres.length < 2){
             getPlayers()  
+            getArray()
         }else{
             arregloNombres.forEach(e=>{
                 if(e != userID){
@@ -562,8 +563,9 @@ function render() {
                     var objeto
                     var objetoClone
                     var objetoClone2
-                    numeroAl = aleatorio(0,1)
-                    if(numeroAl == 0){
+                    // numeroAl = aleatorio(0,1)
+                    
+                    if(arregloONLINE[ix] == 0){
                         // Obtenemos el tronco original y lo clonamos
                         objeto = scene.getObjectByName('tronco')
                         objetoClone = objeto.clone()
@@ -600,7 +602,7 @@ function render() {
                         // Metemos el tronco con name unico al arreglo de troncos
                         aguilas2.push(objetoClone2)
                     }
-    
+                    ix++
                     // y lo metemos a la escena 
                     scene.add(objetoClone)
                     scene.add(objetoClone2)
