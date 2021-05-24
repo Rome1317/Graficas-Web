@@ -27,6 +27,8 @@
  var flagReadyMundo2 = false
 
  var puntuacionTemp = 0
+ var gameoverLocal = false
+ var gameoverOnline = false
 
  $(document).ready(function () {
     clock = new THREE.Clock()
@@ -423,8 +425,18 @@ function render() {
 
             if(personaje1 != null && personaje1.position.z <= -8.5 ){
         
-                console.log('game over')
-            
+                var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
+                    gameover: true
+                });
+                
+                gameoverLocal =true
+                var dbRef2 = firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                    gameoverOnline = snapshot.val().gameover
+                })
+            }
+
+            if(gameoverLocal && gameoverOnline){
+                //Sacar ventana modal de quien gano
             }else{
                 $('#loading').fadeOut(1000)
                 timer = timer + 1
@@ -699,6 +711,10 @@ function render() {
             var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
                 point: puntuacionTemp
             });
+
+            var dbRef2 = firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                personaje2.position.z = snapshot.val().posz
+            })
         }
     }
 

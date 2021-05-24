@@ -22,6 +22,11 @@ var indicez = 0
 var arregloNombres = []
 var userID 
 var userID2
+var arregloONLINE = []
+
+function aleatorioF(minimo,maximo){
+    return Math.floor(Math.random() * ((maximo+1)-minimo)+minimo);
+}
 
 //GUARDANDO
 firebase.auth().onAuthStateChanged(function(user) {
@@ -38,6 +43,14 @@ firebase.auth().onAuthStateChanged(function(user) {
             posz: 0
         });
 
+
+        var arr = []
+        for (let index = 0; index < 100; index++) {
+            arr.push(aleatorioF(0,1))
+        }
+        var dbRef = firebase.database().ref('arr/').set({
+            arregloPos: arr,
+        });
 
         getPlayers()
 
@@ -81,7 +94,11 @@ function getPlayers() {
         });
     })
 }
-
+function getArray() {
+    var dbRef2 = firebase.database().ref('arr/').on('value', function (snapshot){
+        arregloONLINE = snapshot.val()
+    })
+}
 //LEER
 // var dbRef = firebase.database().ref('LordRikura').on('value', function (snapshot) {
 //     alert(snapshot.val().username)
