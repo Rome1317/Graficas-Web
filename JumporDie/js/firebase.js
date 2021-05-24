@@ -33,7 +33,9 @@ firebase.auth().onAuthStateChanged(function(user) {
             point: 0,
             jump: false,
             squad: false,
-            ready: false
+            ready: false,
+            gameover: false,
+            posz: 0
         });
 
 

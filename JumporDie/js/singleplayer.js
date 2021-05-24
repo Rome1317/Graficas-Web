@@ -69,10 +69,6 @@ var puntuacion = 0
 var p1_score = document.querySelector("#p1-score")
 
 $(document).ready(function () {
-
-
- 
-
     clock = new THREE.Clock()
 
     raycaster = new THREE.Raycaster()
@@ -343,220 +339,221 @@ function render() {
     
     //Recibe como parametro la funcion padre
     // Se llama arias veces (update)
-    if(!pausa){
     requestAnimationFrame(render)
-    }
-    var personaje1 = scene.getObjectByName("player1")
-
-
-    if(worldready[0] && worldready[1] && worldready[2]){
-        p1_score.innerHTML = puntuacion
-        $('#loading').fadeOut(1000)
-           
-            timer = timer + 1
-           
-    }
-
-    if(personaje1 != null && personaje1.position.z <= -3.5 ){
-       
-            // console.log('game over')
-        
-    }else{
-        delta = clock.getDelta()
-
-        var yaw = 0;
-        var forward = 0;
-        var updown = 0;
-
-
-        if (keys["A"]) {
-            yaw = 5;
-        } else if (keys["D"]) {
-            yaw = -5;
-        }
-        if (keys["W"]) {
-            forward = -20;
-        } else if (keys["S"]) {
-            forward = 20;
-        }if(keys["Q"]){
-            updown = 5;
-        }else if(keys["E"]){
-            updown = -5;
-        }
-
-
-
-        
-        camera.rotation.y += yaw * delta;
-        camera.translateZ(forward * delta);
-        camera.translateY(updown * delta);
-        
-        pyramid.rotation.y += 1 * delta;
-
-        if(mixers.length > 0){
-            for (let index = 0; index < mixers.length; index++) {
-                mixers[index].update(delta);
-            }
-            // Player 1
-            if(flag == 1){ //Accion 2 SALTAR
-                action.weight = 0
-                action2.weight = 1
-                action3.weight = 0
-                action2.play()
-
-                personaje1.position.y = .5
-                cameraPies.position.y = .9
-                
-                flag = 0
-                
-            }else if(flag == 2){ //Accion 3 AGACHARSE
-                action.weight = 0
-                action2.weight = 1
-                action3.weight = 1
-                action3.play()
-
-                personaje1.position.y = -.5
-                camera.position.y = 1.5
-
-
-                flag = 0
-            }else{ //Idle
-                action.weight = 1
-                action2.weight = 0
-                action3.weight = 0
-                action2.stop();
-                action3.stop();
-
-                personaje1.position.y = 0
-                camera.position.y = 2
-                cameraPies.position.y = .4 
-
-                
-            }
-        }
-
-        if(timer >= 100){
-            // Creamos un nombre unico para cada tronco
-            var nombre = "objeto" + indiceNombre
-            indiceNombre++
-            // Reseteamos el indice solamente para que no llegue al limite
-            // de la variable
-            if(indiceNombre > 100){
-                indiceNombre = 0
-            }
-
-            var objeto
-            var objetoClone
-            numeroAl = aleatorio(0,1)
-            if(numeroAl == 0){
-                // Obtenemos el tronco original y lo clonamos
-                objeto = scene.getObjectByName('laser')
-                objetoClone = objeto.clone()
-                objetoClone.position.z = 10
-                objetoClone.position.y = -1.5
-                objetoClone.position.x = 20
-                objetoClone.name = nombre
-                // Metemos el tronco con name unico al arreglo de troncos
-                laseres.push(objetoClone)
-            }else{
-                objeto = scene.getObjectByName('laser')
-                objetoClone = objeto.clone()
-                objetoClone.position.z = 10
-                objetoClone.position.y = .1
-                objetoClone.position.x = 20
-                objetoClone.name = nombre
-                // Metemos el tronco con name unico al arreglo de troncos
-                laseres.push(objetoClone)
-            }
-
-            // y lo metemos a la escena 
-            scene.add(objetoClone)
-
-            timer = 0
-        }
-
-        var puntuacionTemp = puntuacion
-
-        laseres.forEach(laser =>{
-            var ElLaser = scene.getObjectByName(laser.name)
-            ElLaser.position.z -= 3 * delta
-            if(ElLaser.position.z < personaje1.position.z && ElLaser.position.z > personaje1.position.z - 1){
-                puntuacion += 2
-                // console.log('puntoccccc')
-            }
-            if(ElLaser.position.z <= -8){
-                scene.remove(ElLaser)
-                laseres.shift()
-            }
-            
-            
-        })
-
-        
-        //Colisiones
-        for (var i = 0; i < camera.rayos.length; i++) {
-            var rayo = camera.rayos[i];
-
-            raycaster.set(camera.position, rayo);
-
-            var colision = raycaster.intersectObjects(
-                laseres,
-                true
-            );
-
-            if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    /*
-                    if(colision[0].object.parent.name == "corazon") {
-                        scene.remove(colision[0].object.parent);
-                    }*/
-                    personaje1.position.z -= .01
-                    camera.position.z -= .01
-                    cameraPies.position.z -= .01
-                    puntuacion = puntuacionTemp
-                    // console.log('COLISION CABEZA');
-                    // console.log(personaje1.position);
-
-                    //console.log("Si hay colision");
-                }
-            }
-        }
-        for (var i = 0; i < cameraPies.rayos.length; i++) {
-            var rayo = cameraPies.rayos[i];
-
-            raycaster.set(cameraPies.position, rayo);
-
-            var colision = raycaster.intersectObjects(
-                laseres,
-                true
-            );
-
-            if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    /*
-                    if(colision[0].object.parent.name == "corazon") {
-                        scene.remove(colision[0].object.parent);
-                    }*/
-                    
-                    personaje1.position.z -= .01
-                    camera.position.z -= .01
-                    cameraPies.position.z -= .01
-
-                    puntuacion = puntuacionTemp
-
-                    // console.log('COLISION PIES');
-
-                    //console.log("Si hay colision");
-                }
-            }
-        }
-
-
-        moverPersonaje(delta)
-    }
-
     
+    if(!pausa){
+        var personaje1 = scene.getObjectByName("player1")
 
+        if(worldready[0] && worldready[1] && worldready[2] ){
+            p1_score.innerHTML = puntuacion
+            $('#loading').fadeOut(1000)
+            
+            timer = timer + 1
+            
+        }
+
+        if(personaje1 != null && personaje1.position.z <= -3.5 ){
+        
+                // console.log('game over')
+            
+        }else{
+            delta = clock.getDelta()
+
+            var yaw = 0;
+            var forward = 0;
+            var updown = 0;
+
+
+            if (keys["A"]) {
+                yaw = 5;
+            } else if (keys["D"]) {
+                yaw = -5;
+            }
+            if (keys["W"]) {
+                forward = -20;
+            } else if (keys["S"]) {
+                forward = 20;
+            }if(keys["Q"]){
+                updown = 5;
+            }else if(keys["E"]){
+                updown = -5;
+            }
+
+
+
+            
+            camera.rotation.y += yaw * delta;
+            camera.translateZ(forward * delta);
+            camera.translateY(updown * delta);
+            
+            pyramid.rotation.y += 1 * delta;
+
+            if(mixers.length > 0){
+                for (let index = 0; index < mixers.length; index++) {
+                    mixers[index].update(delta);
+                }
+                // Player 1
+                if(flag == 1){ //Accion 2 SALTAR
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 0
+                    action2.play()
+
+                    personaje1.position.y = .5
+                    cameraPies.position.y = .9
+                    
+                    flag = 0
+                    
+                }else if(flag == 2){ //Accion 3 AGACHARSE
+                    action.weight = 0
+                    action2.weight = 1
+                    action3.weight = 1
+                    action3.play()
+
+                    personaje1.position.y = -.5
+                    camera.position.y = 1.5
+
+
+                    flag = 0
+                }else{ //Idle
+                    action.weight = 1
+                    action2.weight = 0
+                    action3.weight = 0
+                    action2.stop();
+                    action3.stop();
+
+                    personaje1.position.y = 0
+                    camera.position.y = 2
+                    cameraPies.position.y = .4 
+                }
+            }
+
+            if(timer >= 100){
+                // Creamos un nombre unico para cada tronco
+                var nombre = "objeto" + indiceNombre
+                indiceNombre++
+                // Reseteamos el indice solamente para que no llegue al limite
+                // de la variable
+                if(indiceNombre > 100){
+                    indiceNombre = 0
+                }
+
+                var objeto
+                var objetoClone
+                numeroAl = aleatorio(0,1)
+                if(numeroAl == 0){
+                    // Obtenemos el tronco original y lo clonamos
+                    objeto = scene.getObjectByName('laser')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 10
+                    objetoClone.position.y = -1.5
+                    objetoClone.position.x = 20
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    laseres.push(objetoClone)
+                }else{
+                    objeto = scene.getObjectByName('laser')
+                    objetoClone = objeto.clone()
+                    objetoClone.position.z = 10
+                    objetoClone.position.y = .1
+                    objetoClone.position.x = 20
+                    objetoClone.name = nombre
+                    // Metemos el tronco con name unico al arreglo de troncos
+                    laseres.push(objetoClone)
+                }
+
+                // y lo metemos a la escena 
+                scene.add(objetoClone)
+
+                timer = 0
+            }
+
+            var puntuacionTemp = puntuacion
+
+            laseres.forEach(laser =>{
+                var ElLaser = scene.getObjectByName(laser.name)
+                if(!pausa){ 
+                ElLaser.position.z -= 3 * delta
+
+                }
+                if(ElLaser.position.z < personaje1.position.z && ElLaser.position.z > personaje1.position.z - 1){
+                    puntuacion += 2
+                    // console.log('puntoccccc')
+                }
+                if(ElLaser.position.z <= -8){
+                    scene.remove(ElLaser)
+                    laseres.shift()
+                }
+                
+                
+            })
+
+            
+            //Colisiones
+            for (var i = 0; i < camera.rayos.length; i++) {
+                var rayo = camera.rayos[i];
+
+                raycaster.set(camera.position, rayo);
+
+                var colision = raycaster.intersectObjects(
+                    laseres,
+                    true
+                );
+
+                if (colision.length > 0) {
+                    if (colision[0].distance < 1) {
+                        /*
+                        if(colision[0].object.parent.name == "corazon") {
+                            scene.remove(colision[0].object.parent);
+                        }*/
+                        personaje1.position.z -= .01
+                        camera.position.z -= .01
+                        cameraPies.position.z -= .01
+                        puntuacion = puntuacionTemp
+                        // console.log('COLISION CABEZA');
+                        // console.log(personaje1.position);
+
+                        //console.log("Si hay colision");
+                    }
+                }
+            }
+
+            for (var i = 0; i < cameraPies.rayos.length; i++) {
+                var rayo = cameraPies.rayos[i];
+
+                raycaster.set(cameraPies.position, rayo);
+
+                var colision = raycaster.intersectObjects(
+                    laseres,
+                    true
+                );
+
+                if (colision.length > 0) {
+                    if (colision[0].distance < 1) {
+                        /*
+                        if(colision[0].object.parent.name == "corazon") {
+                            scene.remove(colision[0].object.parent);
+                        }*/
+                        
+                        personaje1.position.z -= .01
+                        camera.position.z -= .01
+                        cameraPies.position.z -= .01
+
+                        puntuacion = puntuacionTemp
+
+                        // console.log('COLISION PIES');
+
+                        //console.log("Si hay colision");
+                    }
+                }
+            }
+
+
+            moverPersonaje(delta)
+        }
+
+    }
+    
     renderer.render(scene, camera2)
 
 }

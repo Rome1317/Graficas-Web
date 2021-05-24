@@ -1,7 +1,7 @@
  // Variables globales
  var scene
  var renderer
- var camera
+ var camera, camera2, cameraPies
 
  var clock
  var delta
@@ -26,21 +26,11 @@
  var worldready = [false, false, false, false, false]
  var flagReadyMundo2 = false
 
- 
+ var puntuacionTemp = 0
+
  $(document).ready(function () {
-
-
-    //CODIGO BOTONES VENTANAS MODALES
-    if (e.key === "Escape") { // escape key maps to keycode `27`
-        $('#myModal').modal('toggle')
-    }
-    if (e.key === "e" || e.key === "E") { // tecla e
-        $('#myModal2').modal('toggle')
-    }
-    //FIN
-
-
     clock = new THREE.Clock()
+    raycaster = new THREE.Raycaster()
 
     // Tamano del canvas
     var canvasSize = {
@@ -69,6 +59,36 @@
         // Que tan lejos se va a ver
         100
     )
+    camera.position.y = 2
+    camera.rotation.y = THREE.Math.degToRad(180);
+
+    camera.rayos = [
+        new THREE.Vector3(0, 0, 1),
+        new THREE.Vector3(0, 0, -1),
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(-1, 0, 0),
+    ];
+
+    cameraPies = new THREE.PerspectiveCamera(
+        //Campo de vision
+        75,
+        //Relacion aspecto
+        canvasSize.width / canvasSize.height,
+        //Que tan cerca se va a ver
+        0.1,
+        // Que tan lejos se va a ver
+        100
+    )
+
+    cameraPies.position.y = .4
+    cameraPies.rotation.y = THREE.Math.degToRad(180);
+
+    cameraPies.rayos = [
+        new THREE.Vector3(0, 0, 1),
+        new THREE.Vector3(0, 0, -1),
+        new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(-1, 0, 0),
+    ];
 
     camera2 = new THREE.PerspectiveCamera(
         //Campo de vision
@@ -361,6 +381,8 @@ function render() {
     //Recibe como parametro la funcion padre
     // Se llama arias veces (update)
     requestAnimationFrame(render)
+    var personaje1 = scene.getObjectByName("player1")
+    var personaje2 = scene.getObjectByName("player2")
 
     if(worldready[0] && worldready[1] && worldready[2] && worldready[3] && worldready[4] && arregloNombres.length > 0){
     
@@ -398,216 +420,286 @@ function render() {
         }
 
         if(flagReadyMundo2){
-            $('#loading').fadeOut(1000)
-            timer = timer + 1
 
-            firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
-                if(snapshot.val().jump){
-                    flag2 = 1
-                }
+            if(personaje1 != null && personaje1.position.z <= -8.5 ){
         
-                if(snapshot.val().squad){
-                    flag2 = 2
-                }
-            })
-
-            delta = clock.getDelta()
-
-            var yaw = 0;
-            var forward = 0;
-            var updown = 0;
-
-
-            if (keys["A"]) {
-                yaw = 5;
-            } else if (keys["D"]) {
-                yaw = -5;
-            }
-            if (keys["W"]) {
-                forward = -20;
-            } else if (keys["S"]) {
-                forward = 20;
-            }if(keys["Q"]){
-                updown = 5;
-            }else if(keys["E"]){
-                updown = -5;
-            }
-
+                console.log('game over')
             
-            camera.rotation.y += yaw * delta;
-            camera.translateZ(forward * delta);
-            camera.translateY(updown * delta);
+            }else{
+                $('#loading').fadeOut(1000)
+                timer = timer + 1
+    
+                firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                    if(snapshot.val().jump){
+                        flag2 = 1
+                    }
             
-            pyramid.rotation.y += 1 * delta;
-            pyramid2.rotation.y += 1 * delta;
-
-            // Animaciones
-            // Mide el arreglo de mixers mientras no este vacio
-            // lo va a recorrer y hara el update de las animaciones
-            if(mixers.length > 0){
-                for (let index = 0; index < mixers.length; index++) {
-                    mixers[index].update(delta);
+                    if(snapshot.val().squad){
+                        flag2 = 2
+                    }
+                })
+    
+                delta = clock.getDelta()
+    
+                var yaw = 0;
+                var forward = 0;
+                var updown = 0;
+    
+    
+                if (keys["A"]) {
+                    yaw = 5;
+                } else if (keys["D"]) {
+                    yaw = -5;
                 }
-                // Player 1
-                if(flag == 1){ //Accion 2
-                    action.weight = 0
-                    action2.weight = 1
-                    action3.weight = 0
-                    action2.play()
-
-                    
-                    flag = 0
-                    
-                }else if(flag == 2){ //Accion 3
-                    action.weight = 0
-                    action2.weight = 1
-                    action3.weight = 1
-                    action3.play()
-                    
-
-                    flag = 0
-                }else{ //Idle
-                    action.weight = 1
-                    action2.weight = 0
-                    action3.weight = 0
-                    action2.stop();
-                    action3.stop();
-
-                    firebase.database().ref('jugadores/' + userID).update({
-                        jump: false,
-                        squad: false
-                    });
+                if (keys["W"]) {
+                    forward = -20;
+                } else if (keys["S"]) {
+                    forward = 20;
+                }if(keys["Q"]){
+                    updown = 5;
+                }else if(keys["E"]){
+                    updown = -5;
                 }
-
-                // Player 2
-                if(flag2 == 1){
-                    actionY.weight = 0
-                    actionY2.weight = 1
-                    actionY3.weight = 0
-
-                    flag2 = 0
-                }else if(flag2 == 2){
-                    actionY.weight = 0
-                    actionY2.weight = 1
-                    actionY3.weight = 1
-
-                    flag2 = 0
-                }else{
-                    actionY.weight = 1
-                    actionY2.weight = 0
-                    actionY3.weight = 0
-                }
-            }
-
-
-            if(timer >= 100){
-                // Creamos un nombre unico para cada tronco
-                var nombre = "objeto" + indiceNombre
-                indiceNombre++
-                // Reseteamos el indice solamente para que no llegue al limite
-                // de la variable
-                if(indiceNombre > 100){
-                    indiceNombre = 0
-                }
-
-                var objeto
-                var objetoClone
-                var objetoClone2
-                numeroAl = aleatorio(0,1)
-                if(numeroAl == 0){
-                    // Obtenemos el tronco original y lo clonamos
-                    objeto = scene.getObjectByName('tronco')
-                    objetoClone = objeto.clone()
-                    objetoClone.position.z = 20
-                    objetoClone.position.y = 0.3
-                    objetoClone.position.x = 0
-                    objetoClone.name = nombre
-                    // Metemos el tronco con name unico al arreglo de troncos
-                    troncos.push(objetoClone)
-
-                    objetoClone2 = objeto.clone()
-                    objetoClone2.position.z = 20
-                    objetoClone2.position.y = 0.3
-                    objetoClone2.position.x = 4
-                    objetoClone2.name = nombre + "1"
-                    // Metemos el tronco con name unico al arreglo de troncos
-                    troncos2.push(objetoClone2)
-
-                }else{
-                    objeto = scene.getObjectByName('aguila')
-                    objetoClone = objeto.clone()
-                    objetoClone.position.z = 20
-                    objetoClone.position.y = 1.8
-                    objetoClone.position.x = 0
-                    objetoClone.name = nombre
-                    // Metemos el tronco con name unico al arreglo de troncos
-                    aguilas.push(objetoClone)
-
-                    objetoClone2 = objeto.clone()
-                    objetoClone2.position.z = 20
-                    objetoClone2.position.y = 1.8
-                    objetoClone2.position.x = 4
-                    objetoClone2.name = nombre + "1"
-                    // Metemos el tronco con name unico al arreglo de troncos
-                    aguilas2.push(objetoClone2)
-                }
-
-                // y lo metemos a la escena 
-                scene.add(objetoClone)
-                scene.add(objetoClone2)
-
-                timer = 0
-            }
-
-            troncos.forEach(tronquito => {
-                var tronco = scene.getObjectByName(tronquito.name)
+    
                 
-                tronco.position.z -= 3 * delta
-                tronco.rotation.z -= 9 * delta 
-
-                if(tronco.position.z <= -8){
-                    scene.remove(tronco)
-                    troncos.shift()
-                    
-                }
-            });
-
-            troncos2.forEach(tronquito => {
-                var tronco = scene.getObjectByName(tronquito.name)
+                camera.rotation.y += yaw * delta;
+                camera.translateZ(forward * delta);
+                camera.translateY(updown * delta);
                 
-                tronco.position.z -= 3 * delta
-                tronco.rotation.z -= 9 * delta 
+                pyramid.rotation.y += 1 * delta;
+                pyramid2.rotation.y += 1 * delta;
+    
+                // Animaciones
+                // Mide el arreglo de mixers mientras no este vacio
+                // lo va a recorrer y hara el update de las animaciones
+                if(mixers.length > 0){
+                    for (let index = 0; index < mixers.length; index++) {
+                        mixers[index].update(delta);
+                    }
+                    // Player 1
+                    if(flag == 1){ //Accion 2
+                        action.weight = 0
+                        action2.weight = 1
+                        action3.weight = 0
+                        action2.play()
+                        
+                        personaje1.position.y = .5
+                        cameraPies.position.y = .9
+                        
+                        flag = 0
+                        
+                    }else if(flag == 2){ //Accion 3
+                        action.weight = 0
+                        action2.weight = 1
+                        action3.weight = 1
+                        action3.play()
+                        
+                        personaje1.position.y = -.5
+                        camera.position.y = 1.5
+    
+                        flag = 0
+                    }else{ //Idle
+                        action.weight = 1
+                        action2.weight = 0
+                        action3.weight = 0
+                        action2.stop();
+                        action3.stop();
+                        
+                        personaje1.position.y = 0
+                        camera.position.y = 2
+                        cameraPies.position.y = .4 
 
-                if(tronco.position.z <= -8){
-                    scene.remove(tronco)
-                    troncos2.shift()
+                        firebase.database().ref('jugadores/' + userID).update({
+                            jump: false,
+                            squad: false,
+                            posz: personaje1.position.z
+                        });
+                    }
+    
+                    // Player 2
+                    if(flag2 == 1){
+                        actionY.weight = 0
+                        actionY2.weight = 1
+                        actionY3.weight = 0
+    
+                        flag2 = 0
+                    }else if(flag2 == 2){
+                        actionY.weight = 0
+                        actionY2.weight = 1
+                        actionY3.weight = 1
+    
+                        flag2 = 0
+                    }else{
+                        actionY.weight = 1
+                        actionY2.weight = 0
+                        actionY3.weight = 0
+                    }
+                }
+    
+    
+                if(timer >= 100){
+                    // Creamos un nombre unico para cada tronco
+                    var nombre = "objeto" + indiceNombre
+                    indiceNombre++
+                    // Reseteamos el indice solamente para que no llegue al limite
+                    // de la variable
+                    if(indiceNombre > 100){
+                        indiceNombre = 0
+                    }
+    
+                    var objeto
+                    var objetoClone
+                    var objetoClone2
+                    numeroAl = aleatorio(0,1)
+                    if(numeroAl == 0){
+                        // Obtenemos el tronco original y lo clonamos
+                        objeto = scene.getObjectByName('tronco')
+                        objetoClone = objeto.clone()
+                        objetoClone.position.z = 20
+                        objetoClone.position.y = 0.3
+                        objetoClone.position.x = 0
+                        objetoClone.name = nombre
+                        // Metemos el tronco con name unico al arreglo de troncos
+                        troncos.push(objetoClone)
+    
+                        objetoClone2 = objeto.clone()
+                        objetoClone2.position.z = 20
+                        objetoClone2.position.y = 0.3
+                        objetoClone2.position.x = 4
+                        objetoClone2.name = nombre + "1"
+                        // Metemos el tronco con name unico al arreglo de troncos
+                        troncos2.push(objetoClone2)
+    
+                    }else{
+                        objeto = scene.getObjectByName('aguila')
+                        objetoClone = objeto.clone()
+                        objetoClone.position.z = 20
+                        objetoClone.position.y = 1.8
+                        objetoClone.position.x = 0
+                        objetoClone.name = nombre
+                        // Metemos el tronco con name unico al arreglo de troncos
+                        aguilas.push(objetoClone)
+    
+                        objetoClone2 = objeto.clone()
+                        objetoClone2.position.z = 20
+                        objetoClone2.position.y = 1.8
+                        objetoClone2.position.x = 4
+                        objetoClone2.name = nombre + "1"
+                        // Metemos el tronco con name unico al arreglo de troncos
+                        aguilas2.push(objetoClone2)
+                    }
+    
+                    // y lo metemos a la escena 
+                    scene.add(objetoClone)
+                    scene.add(objetoClone2)
+    
+                    timer = 0
+                }
+    
+                var puntuacionAnterior = puntuacionTemp
+
+                troncos.forEach(tronquito => {
+                    var tronco = scene.getObjectByName(tronquito.name)
                     
+                    tronco.position.z -= 3 * delta
+                    tronco.rotation.z -= 9 * delta 
+    
+                    if(tronco.position.z <= -8){
+                        scene.remove(tronco)
+                        troncos.shift()
+                        
+                    }
+
+                    if(tronco.position.z < personaje1.position.z && tronco.position.z > personaje1.position.z - 1){
+                        puntuacionTemp += 2
+                        // console.log('puntoccccc')
+                    }
+                });
+    
+                troncos2.forEach(tronquito => {
+                    var tronco = scene.getObjectByName(tronquito.name)
+                    
+                    tronco.position.z -= 3 * delta
+                    tronco.rotation.z -= 9 * delta 
+    
+                    if(tronco.position.z <= -8){
+                        scene.remove(tronco)
+                        troncos2.shift()
+                        
+                    }
+                });
+    
+                aguilas.forEach(aguilita =>{
+                    var aguila = scene.getObjectByName(aguilita.name)
+                    aguila.position.z -= 3 * delta
+                
+                    if(aguila.position.z <= -10){
+                        scene.remove(aguila)
+                        aguilas.shift()
+                    }
+
+                    if(aguila.position.z < personaje1.position.z && aguila.position.z > personaje1.position.z - 1){
+                        puntuacionTemp += 2
+                    }
+                })
+    
+                aguilas2.forEach(aguilita =>{
+                    var aguila = scene.getObjectByName(aguilita.name)
+                    aguila.position.z -= 3 * delta
+                
+                    if(aguila.position.z <= -10){
+                        scene.remove(aguila)
+                        aguilas2.shift()
+                    }
+                })
+                
+            }
+    
+             //Colisiones
+             for (var i = 0; i < camera.rayos.length; i++) {
+                var rayo = camera.rayos[i];
+    
+                raycaster.set(camera.position, rayo);
+    
+                var colision = raycaster.intersectObjects(
+                    aguilas,
+                    true
+                );
+    
+                if (colision.length > 0) {
+                    if (colision[0].distance < 1) {
+                        personaje1.position.z -= .01
+                        camera.position.z -= .01
+                        cameraPies.position.z -= .01
+                        puntuacionTemp =puntuacionAnterior
+                    }
                 }
+            }
+    
+            for (var i = 0; i < cameraPies.rayos.length; i++) {
+                var rayo = cameraPies.rayos[i];
+    
+                raycaster.set(cameraPies.position, rayo);
+    
+                var colision = raycaster.intersectObjects(
+                    troncos,
+                    true
+                );
+    
+                if (colision.length > 0) {
+                    if (colision[0].distance < 1) {
+                        personaje1.position.z -= .01
+                        camera.position.z -= .01
+                        cameraPies.position.z -= .01
+                        puntuacionTemp =puntuacionAnterior
+                    }
+                }
+            }  
+
+            var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
+                point: puntuacionTemp
             });
-
-            aguilas.forEach(aguilita =>{
-                var aguila = scene.getObjectByName(aguilita.name)
-                aguila.position.z -= 3 * delta
-            
-                if(aguila.position.z <= -10){
-                    scene.remove(aguila)
-                    aguilas.shift()
-                }
-            })
-
-            aguilas2.forEach(aguilita =>{
-                var aguila = scene.getObjectByName(aguilita.name)
-                aguila.position.z -= 3 * delta
-            
-                if(aguila.position.z <= -10){
-                    scene.remove(aguila)
-                    aguilas2.shift()
-                }
-            })
-            
         }
-
-
     }
 
     moverPersonaje(delta)
@@ -619,20 +711,16 @@ function moverPersonaje(delta){
     var character = scene.getObjectByName('player1')
     // Player 1
     if (keys["C"]) {
-    flag = 1
-    var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
-        jump: true
-    });
-    //    action2.play()
-    //    action2.setLoop( THREE.LoopOnce);
+        flag = 1
+        var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
+            jump: true
+        });
     }
     if (keys["V"]) {
-    flag = 2
-    var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
-        squad: true
-    });
-    //    action3.play()
-    //    action3.setLoop( THREE.LoopOnce);
+        flag = 2
+        var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
+            squad: true
+        });
     }
 }
 

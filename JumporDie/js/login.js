@@ -8,17 +8,7 @@ signupForm.addEventListener('submit',e=>{
     const signupEmail = document.querySelector('#signup-email').value
     const signupPassword = document.querySelector('#signup-password').value
     const signupUsername = document.querySelector('#signup-username').value
-    
-    /*
-    const taskForm = document.getElementById('signup-form');
 
-    const username = taskForm['signup-username'].value;
-    const email = taskForm['signup-email'].value;
-
-    fs.collection('usuarios').doc.set({
-        username,
-        email
-    })*/
 
     auth
         .createUserWithEmailAndPassword(signupEmail, signupPassword)
