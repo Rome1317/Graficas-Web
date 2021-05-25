@@ -427,6 +427,8 @@
 })
 
 var flagArr = true
+var flagIA = true
+var colisionIA = true
 
 function render() {
     //Recibe como parametro la funcion padre
@@ -445,16 +447,6 @@ function render() {
             p1_score.innerHTML = puntuacionTemp
             $('#loading').fadeOut(1000)
             timer = timer +1  
-            firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
-                if(snapshot.val().jump){
-                    flag2 = 1
-                }
-        
-                if(snapshot.val().squad){
-                    flag2 = 2
-                }
-            
-            })
 
             delta = clock.getDelta()
 
@@ -533,17 +525,27 @@ function render() {
                     actionY2.weight = 1
                     actionY3.weight = 0
 
-                    flag2 = 0
+                    personaje2.position.y = .5
+                    cameraPiesIA.position.y = .9
+
+                    
                 }else if(flag2 == 2){
                     actionY.weight = 0
                     actionY2.weight = 1
                     actionY3.weight = 1
 
-                    flag2 = 0
+                    personaje2.position.y = -.5
+                    cameraIA.position.y = 1.5
+
+                    
                 }else{
                     actionY.weight = 1
                     actionY2.weight = 0
                     actionY3.weight = 0
+
+                    personaje2.position.y = 0
+                    cameraIA.position.y = 2
+                    cameraPiesIA.position.y = .4 
                 }
             }
 
@@ -637,6 +639,12 @@ function render() {
                     troncos2.shift()
                     
                 }
+
+                if(tronco.position.z < personaje2.position.z - 1.5 && tronco.position.z > personaje2.position.z - 2.5){
+                    flag2 = 0
+                    flagIA = true
+                    colisionIA = true
+                }
             });
 
             aguilas.forEach(aguilita =>{
@@ -661,6 +669,12 @@ function render() {
                     scene.remove(aguila)
                     aguilas2.shift()
                 }
+
+                if(aguila.position.z < personaje2.position.z - 1.5 && aguila.position.z > personaje2.position.z - 2.5){
+                    flag2 = 0
+                    flagIA = true
+                    colisionIA = true
+                }
             })
             
         }
@@ -677,12 +691,12 @@ function render() {
             );
 
             if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    personaje1.position.z -= 1
-                    camera.position.z -= 1
-                    cameraPies.position.z -= 1
-                    puntuacionTemp =puntuacionAnterior
-                }
+                // if (colision[0].distance < 1) {
+                //     personaje1.position.z -= 1
+                //     camera.position.z -= 1
+                //     cameraPies.position.z -= 1
+                //     puntuacionTemp =puntuacionAnterior
+                // }
             }
         }
 
@@ -697,12 +711,12 @@ function render() {
             );
 
             if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    personaje1.position.z -= 1
-                    camera.position.z -= 1
-                    cameraPies.position.z -= 1
-                    puntuacionTemp =puntuacionAnterior
-                }
+                // if (colision[0].distance < 1) {
+                //     personaje1.position.z -= 1
+                //     camera.position.z -= 1
+                //     cameraPies.position.z -= 1
+                //     puntuacionTemp =puntuacionAnterior
+                // }
             }
         }  
 
@@ -713,16 +727,27 @@ function render() {
             raycaster.set(cameraIA.position, rayo);
 
             var colision = raycaster.intersectObjects(
-                aguilas,
+                aguilas2,
                 true
             );
-
+          
             if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    personaje2.position.z -= 1
-                    cameraIA.position.z -= 1
-                    cameraPiesIA.position.z -= 1
-                    puntuacionTemp =puntuacionAnterior
+                if(colision[0].distance < 2 && colision[0].distance > 1){
+                    if(flagIA){
+                        flagIA = false
+                        flag2 = aleatorio(1,2)
+                    }
+                }
+                else if (colision[0].distance < 1) {
+
+                    if(colisionIA){
+                        personaje2.position.z -= 1
+                        cameraIA.position.z -= 1
+                        cameraPiesIA.position.z -= 1
+                        colisionIA = false
+                    }
+                    
+                    // puntuacionTemp =puntuacionAnterior
                 }
             }
         }
@@ -733,16 +758,25 @@ function render() {
             raycaster.set(cameraPiesIA.position, rayo);
 
             var colision = raycaster.intersectObjects(
-                troncos,
+                troncos2,
                 true
             );
 
             if (colision.length > 0) {
-                if (colision[0].distance < 1) {
-                    personaje1.position.z -= 1
-                    cameraIA.position.z -= 1
-                    cameraPiesIA.position.z -= 1
-                    puntuacionTemp =puntuacionAnterior
+                if(colision[0].distance < 2 && colision[0].distance > 1){
+                    if(flagIA){
+                        flagIA = false
+                        flag2 = aleatorio(1,2)
+                    }
+                }else if (colision[0].distance < 1) {
+                    if(colisionIA){
+                        personaje2.position.z -= 1
+                        cameraIA.position.z -= 1
+                        cameraPiesIA.position.z -= 1
+                        colisionIA = false
+                    }
+                    
+                    // puntuacionTemp =puntuacionAnterior
                 }
             }
         }  
@@ -761,15 +795,11 @@ function moverPersonaje(delta){
     // Player 1
     if (keys["C"]) {
         flag = 1
-        var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
-            jump: true
-        });
+        
     }
     if (keys["V"]) {
         flag = 2
-        var dbRef3 = firebase.database().ref('jugadores/' + userID).update({
-            squad: true
-        });
+        
     }
 }
 
