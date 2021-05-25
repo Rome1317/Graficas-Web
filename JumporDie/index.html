@@ -238,6 +238,37 @@
     <!-- Jquery JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+    
+        
+    
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+            https://firebase.google.com/docs/web/setup#available-libraries -->
+        <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+    
+        <script>
+            var firebaseConfig = {
+    apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
+    authDomain: "gcw-pf.firebaseapp.com",
+    projectId: "gcw-pf",
+    storageBucket: "gcw-pf.appspot.com",
+    messagingSenderId: "270321268780",
+    appId: "1:270321268780:web:68b32fb6bf2b9e0ffaf989",
+    measurementId: "G-3TRFSPGLMN"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+
+var dbRef2 = firebase.database().ref('jugadores/').remove()
+        var dbRef2 = firebase.database().ref('arr/').remove()
+        </script>
+
     
 </body>
 </html>

@@ -47,7 +47,7 @@ signinForm.addEventListener('submit',e=>{
             firebase.auth().onAuthStateChanged(function(user) {
                 if (user) {
                   console.log(user.email)
-                  location.href ="http://localhost/GF/JumporDie/index.html";
+                  location.href ="index.html";
                 } else {
                   // No user is signed in.
                 }

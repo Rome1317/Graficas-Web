@@ -1,4 +1,6 @@
  // Variables globales
+ 
+ const fs = firebase.firestore()
  var scene
  var renderer
  var camera, camera2, cameraPies
@@ -30,7 +32,66 @@
  var gameoverLocal = false
  var gameoverOnline = false
 
+ var finalizo = false
+
  $(document).ready(function () {
+
+
+    $("#btnVolverAJugar").click(function(){
+
+        var noexiste = false
+        var getHighScore = fs.collection("Scores").doc(userID);
+        
+        getHighScore.get().then((doc) => {
+            if (doc.exists) {
+                //console.log("Document data:", doc.data());
+
+               var highscoreActual = doc.data().HighScore
+
+               if(highscoreActual< p1_score.innerHTML){
+                fs.collection('Scores').doc(userID)
+                .set({
+                    username: p1_nombre.innerHTML,
+                    HighScore: p1_score.innerHTML
+                })
+                .catch(error => {
+                    console.log('Algo salio mal en firestore: ', error);
+                })
+               }
+
+
+            } else {
+                
+               
+                fs.collection('Scores').doc(userID)
+                .set({
+                    username: p1_nombre.innerHTML,
+                    HighScore: p1_score.innerHTML
+                })
+                .catch(error => {
+                    console.log('Algo salio mal en firestore: ', error);
+                })
+
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+
+        
+
+        //if(noexiste){
+           
+            
+            
+            //noexiste = false
+        //}
+        
+        window.location.href='index.html';
+    });
+
+
+
     clock = new THREE.Clock()
     raycaster = new THREE.Raycaster()
 
@@ -438,10 +499,37 @@ function render() {
 
             if(gameoverLocal && gameoverOnline){
                 //Sacar ventana modal de quien gano
+                if(!finalizo){
+                var puntuacion1
+                var dbRef1 = firebase.database().ref('jugadores/' + userID).on('value', function (snapshot){
+                    puntuacion1 = snapshot.val().point
+                })
+
+                var puntuacion2
+                var dbRef2 = firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
+                    puntuacion2 = snapshot.val().point
+                })
+
+                if( puntuacion1 > puntuacion2){
+                $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                var Frase = "Wow, esta vez he ganado hahaha, mi puntuacion fue de : ";
+                var linkDelJuego = "";
+                $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+ puntuacion1+"%20"+linkDelJuego);
+
+                }else{
+                $(".modal-body").append('<h1 class="clasecentro">'+p2_nombre.innerHTML+'</h1>');
+                var Frase = "Wow, esta vez he perdido :(, pero me diverti hehe, mi puntuacion fue de : ";
+                var linkDelJuego = "";
+                $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+puntuacion1+"%20"+linkDelJuego);
+                }
+
+                $('#myModal2').modal('show')
+                finalizo = true    
+            }
+
             }else{
                 $('#loading').fadeOut(1000)
-                timer = timer + 1
-    
+               timer = timer +1  
                 firebase.database().ref('jugadores/' + userID2).on('value', function (snapshot){
                     if(snapshot.val().jump){
                         flag2 = 1
@@ -450,6 +538,7 @@ function render() {
                     if(snapshot.val().squad){
                         flag2 = 2
                     }
+                
                 })
     
                 delta = clock.getDelta()
@@ -549,7 +638,10 @@ function render() {
                     }
                 }
     
+    //console.log( "delta: "+ delta)
     
+    //console.log( timer)
+
                 if(timer >= 100){
                     // Creamos un nombre unico para cada tronco
                     var nombre = "objeto" + indiceNombre
@@ -602,6 +694,7 @@ function render() {
                         // Metemos el tronco con name unico al arreglo de troncos
                         aguilas2.push(objetoClone2)
                     }
+                    //debugger
                     ix++
                     // y lo metemos a la escena 
                     scene.add(objetoClone)
@@ -682,9 +775,9 @@ function render() {
     
                 if (colision.length > 0) {
                     if (colision[0].distance < 1) {
-                        personaje1.position.z -= .01
-                        camera.position.z -= .01
-                        cameraPies.position.z -= .01
+                        personaje1.position.z -= 1
+                        camera.position.z -= 1
+                        cameraPies.position.z -= 1
                         puntuacionTemp =puntuacionAnterior
                     }
                 }
@@ -702,9 +795,9 @@ function render() {
     
                 if (colision.length > 0) {
                     if (colision[0].distance < 1) {
-                        personaje1.position.z -= .01
-                        camera.position.z -= .01
-                        cameraPies.position.z -= .01
+                        personaje1.position.z -= 1
+                        camera.position.z -= 1
+                        cameraPies.position.z -= 1
                         puntuacionTemp =puntuacionAnterior
                     }
                 }
