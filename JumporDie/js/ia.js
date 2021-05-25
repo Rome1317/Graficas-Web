@@ -178,7 +178,7 @@
     // Iluminacion
     var ambient = new THREE.AmbientLight(
         // Color
-        new THREE.Color(.8,.8,.8),
+        new THREE.Color(0x82a1b1),
         // intensidad
         1.0
     )
