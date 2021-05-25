@@ -12,7 +12,9 @@
         .clasecentro{
             align-content: center;
             text-align: center;
-            
+            border-color: white;
+            -webkit-text-stroke-width: .5px;
+            -webkit-text-stroke-color: white;
         }
     </style>
 
@@ -25,9 +27,9 @@
 <!--MODALES-->
 <div class="modal fade " tabindex="-1" role="dialog" id="myModal">
     <div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header justify-content-center">
-        <h4 class="modal-title ">PAUSA</h4>
+    <div  class="modal-content">
+        <div style="background-image: url(./Assets/Imagenes/pause.svg); background-repeat: no-repeat; background-size: 75%; background-position: 50%; padding: 20%;" class="modal-header justify-content-center">
+        <h1 class="modal-title clasecentro">PAUSA</h1>
         </div>
         <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -37,19 +39,20 @@
 </div><!-- /.modal -->
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="myModal2">
-    <div class="modal-dialog" role="document">
-    <div class="modal-content">
+<div  class="modal fade" tabindex="-1" role="dialog" id="myModal2">
+    <div  class="modal-dialog" role="document">
+    <div   class="modal-content">
         <!--<div class="modal-header">
         <h4 class="modal-title">Modal title</h4>
         </div>-->
-        <div class="modal-body">
+        <div  style="background-image: url(./Assets/Imagenes/winner.svg); background-repeat: no-repeat; background-size: 75%; background-position: 50%; padding: 10%;" class="modal-body">
                 <ul class="list-group" id="listaHighScores">
                     <!--<li class="list-group-item clasecentro">LordRikura : 900</li>
                     <li class="list-group-item clasecentro">Romeneitor : 899</li>
                     <li class="list-group-item clasecentro">Dijillotron : 898</li>-->
                   </ul>
-
+                  <!--<img src="./Assets/Imagenes/winner.svg" alt="Ninja">
+                  -->
         </div>
         <div class="modal-footer">
 
@@ -61,7 +64,7 @@
 Tweet</a>
         </div>
             
-        <button type="button" class="btn btn-default" data-dismiss="modal">Volver a Jugar</button>
+        <button id="btnVolveraJugar" type="button" class="btn btn-default" data-dismiss="modal">Volver a Jugar</button>
         
         </div>
     </div><!-- /.modal-content -->

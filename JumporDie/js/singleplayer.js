@@ -74,38 +74,16 @@ var p1_score = document.querySelector("#p1-score")
 
 $(document).ready(function () {
 
+    musica = new Audio('./Assets/jellyfish-jam.mp3')
+    musica.volume = 0.1;
+    musica.addEventListener('ended',function(){
+        this.cunrrentTime = 0;
+        this.play();
+    },false);
+    musica.play();
 
-    $("#btnVolverAJugar").click(function(){
-        var getHighScore = fs.collection("Scores").doc(userID);
+    $("#btnVolveraJugar").click(function(){
         
-        getHighScore.get().then((doc) => {
-            if (doc.exists) {
-               var highscoreActual = doc.data().HighScore
-
-               if(highscoreActual< p1_score.innerHTML){
-                fs.collection('Scores').doc(userID)
-                .set({
-                    username: p1_nombre.innerHTML,
-                    HighScore: p1_score.innerHTML
-                })
-                .catch(error => {
-                    console.log('Algo salio mal en firestore: ', error);
-                })
-               }
-            } else {
-                fs.collection('Scores').doc(userID)
-                .set({
-                    username: p1_nombre.innerHTML,
-                    HighScore: p1_score.innerHTML
-                })
-                .catch(error => {
-                    console.log('Algo salio mal en firestore: ', error);
-                })
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
         window.location.href='index.html';
     });
 
@@ -410,7 +388,7 @@ function render() {
                             var p1ScoreINT = parseInt(p1_score.innerHTML)
 
                            if(highscoreactualint< p1ScoreINT){
-                               debugger
+                               //debugger
                             fs.collection('Scores').doc(userID)
                             .set({
                                 username: p1_nombre.innerHTML,
@@ -427,7 +405,7 @@ function render() {
 
                             
                            }else{
-                               debugger
+                               //debugger
                             $(".modal-body").append('<h2 class="clasecentro">'+p1_score.innerHTML+'</h2>');
                             $(".modal-body").append('<h2 class="clasecentro"> HIGH SCORE: '+highscoreActual+'</h2>');
                             $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');

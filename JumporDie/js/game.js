@@ -36,6 +36,14 @@
 
  $(document).ready(function () {
 
+    musica = new Audio('./Assets/CrazyFrog.mp3')
+    musica.volume = 0.1;
+    musica.addEventListener('ended',function(){
+        this.cunrrentTime = 0;
+        this.play;
+    },false)
+    musica.play();
+
 
     $("#btnVolverAJugar").click(function(){
 

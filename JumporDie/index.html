@@ -19,10 +19,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Bigelow+Rules&display=swap" rel="stylesheet">
 
 
+   
+
 </head>
 <body>
 
-    <audio class="sound" src="Assets/jellyfish-jam.mp3"></audio>
+
+    <audio id="musiquitapapa" src="./Assets/instrumentalindex.mp3" muted></audio>
+    
 
     <div class="bg"></div>
 
@@ -239,6 +243,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
+   
         <!-- The core Firebase JS SDK is always required and must be listed first -->
         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
         <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
@@ -267,7 +272,21 @@ firebase.initializeApp(firebaseConfig);
 
 var dbRef2 = firebase.database().ref('jugadores/').remove()
         var dbRef2 = firebase.database().ref('arr/').remove()
+
+
+        $(document).ready(function () {
+
+musica = new Audio('./Assets/instrumentalindex.mp3')
+musica.volume = 0.1;
+musica.addEventListener('ended',function(){
+    this.cunrrentTime = 0;
+    this.play();
+},false);
+musica.play();
+});
+
         </script>
+
 
     
 </body>
