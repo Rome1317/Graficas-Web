@@ -47,7 +47,10 @@ var firebaseConfig = {
  var gameover = false
  var p1_score = document.querySelector("#p1-score")
 
- 
+
+ //PARTICULAS 
+ let rain, rainGeo, rainCount = 15000
+
  $(document).ready(function () {
 
 
@@ -212,12 +215,12 @@ var firebaseConfig = {
 
     const loaderT = new THREE.CubeTextureLoader();
     const textureT = loaderT.load([
-        './Assets/Imagenes/Skybox2/penguins2/arid2_lf.jpg',
-        './Assets/Imagenes/Skybox2/penguins2/arid2_lf.jpg', //bk
-        './Assets/Imagenes/Skybox2/penguins2/arid2_up.jpg', //Arriba
-        './Assets/Imagenes/Skybox2/penguins2/arid2_dn.jpg', //Abajo
-        './Assets/Imagenes/Skybox2/penguins2/arid2_rt.jpg',//ft
-        './Assets/Imagenes/Skybox2/penguins2/arid2_ft.jpg', //rt
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_lf.jpg',
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_lf.jpg', //bk
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_up.jpg', //Arriba
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_dn.jpg', //Abajo
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_rt.jpg',//ft
+        './Assets/Imagenes/Skybox2/Fondo2/raspberry_ft.jpg', //rt
     ]);
     textureT.encoding = THREE.sRGBEncoding;
     scene.background = textureT;
@@ -431,6 +434,28 @@ var firebaseConfig = {
 
     })
 
+    //lluvia
+    rainGeo = new THREE.Geometry()
+    for (let index = 0; index < rainCount; index++) {
+        rainDrop = new THREE.Vector3(
+            Math.random() * 400 - 200,
+            Math.random() * 500 - 250,
+            Math.random() * 400 - 200,
+        )
+        rainDrop.velocity = {}
+        rainDrop.velocity = 0
+        rainGeo.vertices.push(rainDrop)
+    }
+
+    rainMaterial = new THREE.PointsMaterial({
+        color: 0xaaaaaa,
+        size: 0.1,
+        transparent: true
+    })
+
+    rain = new THREE.Points(rainGeo, rainMaterial)
+    scene.add(rain)
+
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
@@ -557,6 +582,16 @@ function render() {
                 updown = -5;
             }
 
+            //LLUVIA
+            rainGeo.vertices.forEach( p => {
+                p.velocity -= 0.5 * delta //+ Math.random() * 0.1
+                p.y += p.velocity
+                if(p.y < -200){
+                    p.y = 200
+                    p.velocity = 0
+                }
+            })
+            rainGeo.verticesNeedUpdate = true
             
             camera.rotation.y += yaw * delta;
             camera.translateZ(forward * delta);
