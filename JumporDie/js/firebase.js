@@ -97,7 +97,9 @@ function getPlayers() {
 }
 
 function getArray() {
+
     var dbRef2 = firebase.database().ref('arr/arregloPos').on('value', function (snapshot){
+
         arregloONLINE = snapshot.val()
         console.log(arregloONLINE)
     })

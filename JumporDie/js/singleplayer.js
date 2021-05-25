@@ -37,6 +37,9 @@ firebase.auth().onAuthStateChanged(function(user) {
 
 
 // Variables globales
+
+ 
+const fs = firebase.firestore()
 var scene
 var renderer
 var camera
@@ -44,6 +47,7 @@ var camera2
 var cameraPies
 
 var pausa = false
+var gameover = false
 
 var clock
 var delta
@@ -69,6 +73,42 @@ var puntuacion = 0
 var p1_score = document.querySelector("#p1-score")
 
 $(document).ready(function () {
+
+
+    $("#btnVolverAJugar").click(function(){
+        var getHighScore = fs.collection("Scores").doc(userID);
+        
+        getHighScore.get().then((doc) => {
+            if (doc.exists) {
+               var highscoreActual = doc.data().HighScore
+
+               if(highscoreActual< p1_score.innerHTML){
+                fs.collection('Scores').doc(userID)
+                .set({
+                    username: p1_nombre.innerHTML,
+                    HighScore: p1_score.innerHTML
+                })
+                .catch(error => {
+                    console.log('Algo salio mal en firestore: ', error);
+                })
+               }
+            } else {
+                fs.collection('Scores').doc(userID)
+                .set({
+                    username: p1_nombre.innerHTML,
+                    HighScore: p1_score.innerHTML
+                })
+                .catch(error => {
+                    console.log('Algo salio mal en firestore: ', error);
+                })
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+        window.location.href='index.html';
+    });
+
     clock = new THREE.Clock()
 
     raycaster = new THREE.Raycaster()
@@ -355,6 +395,72 @@ function render() {
         if(personaje1 != null && personaje1.position.z <= -3.5 ){
         
                 // console.log('game over')
+                if(!gameover){
+
+                    var getHighScore = fs.collection("Scores").doc(userID);
+        
+                    getHighScore.get().then((doc) => {
+                        if (doc.exists) {
+                            //console.log("Document data:", doc.data());
+                            var Frase = "";
+            
+                           var highscoreActual = doc.data().HighScore
+                           
+                            var highscoreactualint = parseInt (highscoreActual)
+                            var p1ScoreINT = parseInt(p1_score.innerHTML)
+
+                           if(highscoreactualint< p1ScoreINT){
+                               debugger
+                            fs.collection('Scores').doc(userID)
+                            .set({
+                                username: p1_nombre.innerHTML,
+                                HighScore: p1_score.innerHTML
+                            })
+                            .catch(error => {
+                                console.log('Algo salio mal en firestore: ', error);
+                            })
+                            $(".modal-body").append('<h2 class="clasecentro"> NUEVO HIGH SCORE: '+p1_score.innerHTML+'</h2>');
+                            $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                            Frase = "Wow, tengo un nuevo highscore de : ";
+                            var linkDelJuego = "";
+                            $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+ p1_score.innerHTML+"%20"+linkDelJuego);
+
+                            
+                           }else{
+                               debugger
+                            $(".modal-body").append('<h2 class="clasecentro">'+p1_score.innerHTML+'</h2>');
+                            $(".modal-body").append('<h2 class="clasecentro"> HIGH SCORE: '+highscoreActual+'</h2>');
+                            $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                            Frase = "Wow, no mejore mi highscore de : ";
+                            var linkDelJuego = "";
+                            $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+highscoreActual+"%20"+linkDelJuego);
+                           }
+            
+            
+                        } else {
+                            
+                            fs.collection('Scores').doc(userID)
+                            .set({
+                                username: p1_nombre.innerHTML,
+                                HighScore: p1_score.innerHTML
+                            })
+                            .catch(error => {
+                                console.log('Algo salio mal en firestore: ', error);
+                            })
+            
+                            console.log("No such document!");
+                        }
+                    }).catch((error) => {
+                        console.log("Error getting document:", error);
+                    });
+
+
+
+                $('#myModal2').modal('show')
+                gameover = true
+                }
+                
+
             
         }else{
             delta = clock.getDelta()
@@ -506,9 +612,9 @@ function render() {
                         if(colision[0].object.parent.name == "corazon") {
                             scene.remove(colision[0].object.parent);
                         }*/
-                        personaje1.position.z -= .01
-                        camera.position.z -= .01
-                        cameraPies.position.z -= .01
+                        personaje1.position.z -= 1
+                        camera.position.z -= 1
+                        cameraPies.position.z -= 1
                         puntuacion = puntuacionTemp
                         // console.log('COLISION CABEZA');
                         // console.log(personaje1.position);

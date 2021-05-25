@@ -39,45 +39,6 @@
 
     $("#btnVolverAJugar").click(function(){
 
-        var noexiste = false
-        var getHighScore = fs.collection("Scores").doc(userID);
-        
-        getHighScore.get().then((doc) => {
-            if (doc.exists) {
-                //console.log("Document data:", doc.data());
-
-               var highscoreActual = doc.data().HighScore
-
-               if(highscoreActual< p1_score.innerHTML){
-                fs.collection('Scores').doc(userID)
-                .set({
-                    username: p1_nombre.innerHTML,
-                    HighScore: p1_score.innerHTML
-                })
-                .catch(error => {
-                    console.log('Algo salio mal en firestore: ', error);
-                })
-               }
-
-
-            } else {
-                
-               
-                fs.collection('Scores').doc(userID)
-                .set({
-                    username: p1_nombre.innerHTML,
-                    HighScore: p1_score.innerHTML
-                })
-                .catch(error => {
-                    console.log('Algo salio mal en firestore: ', error);
-                })
-
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
-        
         window.location.href='index.html';
     });
 
@@ -497,6 +458,50 @@ function render() {
             if(gameoverLocal && gameoverOnline){
                 //Sacar ventana modal de quien gano
                 if(!finalizo){
+                    var getHighScore = fs.collection("Scores").doc(userID);
+        
+                    getHighScore.get().then((doc) => {
+                        if (doc.exists) {
+                            //console.log("Document data:", doc.data());
+            
+                           var highscoreActual = doc.data().HighScore
+            
+                           var highscoreactualint = parseInt (highscoreActual)
+                           var p1ScoreINT = parseInt(p1_score.innerHTML)
+
+                           if(highscoreactualint< p1ScoreINT){
+                            fs.collection('Scores').doc(userID)
+                            .set({
+                                username: p1_nombre.innerHTML,
+                                HighScore: p1_score.innerHTML
+                            })
+                            .catch(error => {
+                                console.log('Algo salio mal en firestore: ', error);
+                            })
+                           }
+            
+            
+                        } else {
+                            
+                           
+                            fs.collection('Scores').doc(userID)
+                            .set({
+                                username: p1_nombre.innerHTML,
+                                HighScore: p1_score.innerHTML
+                            })
+                            .catch(error => {
+                                console.log('Algo salio mal en firestore: ', error);
+                            })
+            
+                            console.log("No such document!");
+                        }
+                    }).catch((error) => {
+                        console.log("Error getting document:", error);
+                    });
+
+
+
+
                 var puntuacion1
                 var dbRef1 = firebase.database().ref('jugadores/' + userID).on('value', function (snapshot){
                     puntuacion1 = snapshot.val().point
@@ -521,7 +526,7 @@ function render() {
                 }
 
                 $('#myModal2').modal('show')
-                finalizo = true    
+                finalizo = true
             }
 
             }else{
@@ -769,7 +774,6 @@ function render() {
                     aguilas,
                     true
                 );
-    
                 if (colision.length > 0) {
                     if (colision[0].distance < 1) {
                         personaje1.position.z -= 1
