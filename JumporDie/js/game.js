@@ -77,15 +77,6 @@
         }).catch((error) => {
             console.log("Error getting document:", error);
         });
-
-        
-
-        //if(noexiste){
-           
-            
-            
-            //noexiste = false
-        //}
         
         window.location.href='index.html';
     });
@@ -440,6 +431,8 @@ function init() {
     
 }
 
+var flagArr = true
+
 function render() {
     //Recibe como parametro la funcion padre
     // Se llama arias veces (update)
@@ -455,7 +448,11 @@ function render() {
 
         if(arregloNombres.length < 2){
             getPlayers()  
+        }else if(arregloNombres.length == 2 && flagArr){
             getArray()
+            if(arregloONLINE != null ){
+                flagArr = false
+            }
         }else{
             arregloNombres.forEach(e=>{
                 if(e != userID){
@@ -511,16 +508,16 @@ function render() {
                 })
 
                 if( puntuacion1 > puntuacion2){
-                $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
-                var Frase = "Wow, esta vez he ganado hahaha, mi puntuacion fue de : ";
-                var linkDelJuego = "";
-                $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+ puntuacion1+"%20"+linkDelJuego);
+                    $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                    var Frase = "Wow, esta vez he ganado hahaha, mi puntuacion fue de : ";
+                    var linkDelJuego = "";
+                    $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+ puntuacion1+"%20"+linkDelJuego);
 
                 }else{
-                $(".modal-body").append('<h1 class="clasecentro">'+p2_nombre.innerHTML+'</h1>');
-                var Frase = "Wow, esta vez he perdido :(, pero me diverti hehe, mi puntuacion fue de : ";
-                var linkDelJuego = "";
-                $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+puntuacion1+"%20"+linkDelJuego);
+                    $(".modal-body").append('<h1 class="clasecentro">'+p2_nombre.innerHTML+'</h1>');
+                    var Frase = "Wow, esta vez he perdido :(, pero me diverti hehe, mi puntuacion fue de : ";
+                    var linkDelJuego = "";
+                    $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+puntuacion1+"%20"+linkDelJuego);
                 }
 
                 $('#myModal2').modal('show')
