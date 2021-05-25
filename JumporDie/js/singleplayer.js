@@ -416,7 +416,12 @@ function render() {
             
             
                         } else {
-                            
+                            $(".modal-body").append('<h2 class="clasecentro">'+p1_score.innerHTML+'</h2>');
+                            $(".modal-body").append('<h2 class="clasecentro"> MI PRIMER HIGH SCORE: '+p1_score.innerHTML+'</h2>');
+                            $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                            Frase = "Wow, mi primer highscore fue de : ";
+                            var linkDelJuego = "";
+                            $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+highscoreActual+"%20"+linkDelJuego);
                             fs.collection('Scores').doc(userID)
                             .set({
                                 username: p1_nombre.innerHTML,

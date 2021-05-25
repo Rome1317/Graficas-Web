@@ -172,22 +172,8 @@
                               
                             </tr>
                         </thead>
-                        <tbody class="">
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Rome</td>
-                                <td>10000</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>Donato</td>
-                                <td>9999</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>Jesus</td>
-                                <td>9998</td>
-                            </tr>
+                        <tbody class="hiscores">
+                           
                         </tbody>
                     </table>
                 </div>
@@ -273,8 +259,68 @@ firebase.initializeApp(firebaseConfig);
 var dbRef2 = firebase.database().ref('jugadores/').remove()
         var dbRef2 = firebase.database().ref('arr/').remove()
 
+ var highscoresarray =[];
+$(document).ready(function () {
 
-        $(document).ready(function () {
+   
+    var count =1
+    const fs = firebase.firestore()
+    var highscoreREF = fs.collection("Scores");
+    highscoreREF.orderBy("HighScore","desc").limit(5).get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            highscoresarray.push({ username: doc.data().username, highscore : doc.data().HighScore});
+            //$(".hiscores").append('<tr><th scope="row">'+count+'</th><td>'+doc.data().username+'</td><td>'+doc.data().HighScore+'</td></tr>');
+            //console.log(doc.id, " => ", doc.data());
+            highscoresarray.sort((a, b) => parseFloat(b.highscore) - parseFloat(a.highscore));
+
+            highscoresarray.sort();
+            count ++
+        }
+        
+        );
+
+    for(var i=0;i<highscoresarray.length;i++){
+        $(".hiscores").append('<tr><th scope="row">'+(i+1)+'</th><td>'+highscoresarray[i]["username"]+'</td><td>'+highscoresarray[i]["highscore"]+'</td></tr>');
+    }
+
+    })
+    .catch((error) => {
+        console.log("Error getting documents: ", error);
+    });
+count = 1
+
+
+//highscoresarray.sort();
+/*highscoresarray.sort(function (a, b) {
+  if (a.highscore > b.highscore) {
+    return 1;
+  }
+  if (a.highscore < b.highscore) {
+    return -1;
+  }
+  // a must be equal to b
+  return 0;
+});
+
+
+
+$.each(result, function(idx, obj){ 
+    $.each(obj, function(key, value){
+        console.log(key + ": " + value);
+    });
+});
+*/
+//highscoresarray.sort((a, b) => parseFloat(b.highscore) - parseFloat(a.highscore));
+
+//highscoresarray.sort();
+
+for(var i=0;i<highscoresarray.length;i++){
+ console.log(persona[i]["username"]);
+}
+
+console.log(highscoresarray)
+
 
 musica = new Audio('./Assets/instrumentalindex.mp3')
 musica.volume = 0.1;
@@ -284,6 +330,8 @@ musica.addEventListener('ended',function(){
 },false);
 musica.play();
 });
+
+
 
         </script>
 
