@@ -450,7 +450,7 @@ function render() {
             getPlayers()  
         }else if(arregloNombres.length == 2 && flagArr){
             getArray()
-            if(arregloONLINE != null ){
+            if(arregloONLINE != null){
                 flagArr = false
             }
         }else{

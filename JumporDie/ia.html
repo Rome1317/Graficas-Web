@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jump or die</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+    <style>
+        .clasecentro{
+            align-content: center;
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal2">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <!--<div class="modal-header">
+        <h4 class="modal-title">Modal title</h4>
+        </div>-->
+        <div class="modal-body">
+            
+            
+            <h1 class="clasecentro">GANADOR</h1>
+                 <!--<ul class="list-group" id="listaHighScores">
+                    <li class="list-group-item active" style="background: crimson; ">PUNTUACIONES</li>
+                   <li class="list-group-item clasecentro">LordRikura : 900</li>
+                    <li class="list-group-item clasecentro">Romeneitor : 899</li>
+                    <li class="list-group-item clasecentro">Dijillotron : 898</li>
+                  </ul>-->
+
+        </div>
+        <div class="modal-footer">
+
+            
+
+<div style="width:20% ; border-radius: 10%; ">
+    <a class="twitter-share-button"
+    href="https://twitter.com/intent/tweet?text=Hola%20Donato"
+    data-size="large"><img style="width: 30%;" src="https://cdn.cms-twdigitalassets.com/content/dam/help-twitter/twitter_logo_blue.png.twimg.768.png"></img>
+Tweet</a>
+</div>
+        <button id="btnVolverAJugar"  type="button" class="btn btn-default" data-dismiss="modal">Volver a Jugar</button>
+        <button type="button"  class="btn btn-primary">Regresar Al Menu</button>
+        </div>
+    </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--FIN MODALES-->
+
+
+    <div id="loading" class="loading">
+        <h2>Cargando...</h2>
+        <img src="./Assets/Imagenes/Loading_2.gif" alt="">
+    </div>
+    <div id="scene-section">
+        <div class="score">
+            <div class="player">
+                <img src="./Assets/Imagenes/avatar01.png" alt="">
+                <div  class="puntuacion">
+                    <h2 id="p1-nombre" class="nombre"></h2>
+                    <p id="p1-score"></p>
+                </div>
+            </div>
+            <div  class="player dos">
+                <img src="./Assets/Imagenes/avatar02.png" alt="">
+                <div  class="puntuacion">
+                    <h2 id="p2-nombre" class="nombre">Bot 1</h2>
+                    <p id ="p2-score">0</p>
+                </div>
+            </div>       
+        </div>
+    </div>
+    <!-- Librerias necesarias -->
+    <link rel="stylesheet" href="./css/game.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+
+
+    <!-- CDN Jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--Bootstrap-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- Three.js -->
+    <script type="text/javascript" src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/three2.js"></script>
+    <script type="text/javascript"src="js/libs/MTLLoader.js"></script>
+    <script type="text/javascript"src="js/libs/FBXLoader.js"></script>
+    <script type="text/javascript"src="js/libs/OBJLoader.js"></script>
+    <script type="text/javascript"src="js/libs/inflate.min.js"></script>
+    <script type="text/javascript"src="js/libs/Sky.js"></script>
+    <script type="text/javascript"src="js/libs/Water.js"></script>
+    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+
+    
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+
+    <script src="./js/firebase.js"></script>
+
+    <script type = "text/javascript" src="./js/ia.js"></script>
+</body>
+</html>
