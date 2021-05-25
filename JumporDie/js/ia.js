@@ -1,3 +1,15 @@
+var firebaseConfig = {
+    apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
+    authDomain: "gcw-pf.firebaseapp.com",
+    projectId: "gcw-pf",
+    storageBucket: "gcw-pf.appspot.com",
+    messagingSenderId: "270321268780",
+    appId: "1:270321268780:web:68b32fb6bf2b9e0ffaf989",
+    measurementId: "G-3TRFSPGLMN"
+    };
+    // Initialize Firebase
+    //firebase.initializeApp(firebaseConfig);
+    
  // Variables globales
  
  const fs = firebase.firestore()
@@ -32,8 +44,10 @@
  var gameoverLocal = false
  var gameoverOnline = false
 
- var finalizo = false
+ var gameover = false
+ var p1_score = document.querySelector("#p1-score")
 
+ 
  $(document).ready(function () {
 
 
@@ -442,6 +456,79 @@ function render() {
 
         if(personaje1 != null && personaje1.position.z <= -8.5 ){
     
+
+
+            if(!gameover){
+
+                var getHighScore = fs.collection("Scores").doc(userID);
+    
+                getHighScore.get().then((doc) => {
+                    if (doc.exists) {
+                        //console.log("Document data:", doc.data());
+                        var Frase = "";
+        
+                       var highscoreActual = doc.data().HighScore
+                       
+                        var highscoreactualint = parseInt (highscoreActual)
+                        var p1ScoreINT = parseInt(p1_score.innerHTML)
+
+                       if(highscoreactualint< p1ScoreINT){
+                           //debugger
+                        fs.collection('Scores').doc(userID)
+                        .set({
+                            username: p1_nombre.innerHTML,
+                            HighScore: p1_score.innerHTML
+                        })
+                        .catch(error => {
+                            console.log('Algo salio mal en firestore: ', error);
+                        })
+                        $(".modal-body").append('<h2 class="clasecentro"> NUEVO HIGH SCORE: '+p1_score.innerHTML+'</h2>');
+                        $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                        Frase = "Wow, tengo un nuevo highscore de : ";
+                        var linkDelJuego = "";
+                        $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+ p1_score.innerHTML+"%20"+linkDelJuego);
+
+                        
+                       }else{
+                           //debugger
+                        $(".modal-body").append('<h2 class="clasecentro">'+p1_score.innerHTML+'</h2>');
+                        $(".modal-body").append('<h2 class="clasecentro"> HIGH SCORE: '+highscoreActual+'</h2>');
+                        $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                        Frase = "Wow, no mejore mi highscore de : ";
+                        var linkDelJuego = "";
+                        $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+highscoreActual+"%20"+linkDelJuego);
+                       }
+        
+        
+                    } else {
+                        $(".modal-body").append('<h2 class="clasecentro">'+p1_score.innerHTML+'</h2>');
+                        $(".modal-body").append('<h2 class="clasecentro"> MI PRIMER HIGH SCORE: '+p1_score.innerHTML+'</h2>');
+                        $(".modal-body").append('<h1 class="clasecentro">'+p1_nombre.innerHTML+'</h1>');
+                        Frase = "Wow, mi primer highscore fue de : ";
+                        var linkDelJuego = "";
+                        $(".twitter-share-button").attr("href","https://twitter.com/intent/tweet?text="+Frase+highscoreActual+"%20"+linkDelJuego);
+                        fs.collection('Scores').doc(userID)
+                        .set({
+                            username: p1_nombre.innerHTML,
+                            HighScore: p1_score.innerHTML
+                        })
+                        .catch(error => {
+                            console.log('Algo salio mal en firestore: ', error);
+                        })
+        
+                        console.log("No such document!");
+                    }
+                }).catch((error) => {
+                    console.log("Error getting document:", error);
+                });
+
+
+
+            $('#myModal2').modal('show')
+            gameover = true
+            }
+
+
            //Gameover
         }else{
             p1_score.innerHTML = puntuacionTemp
@@ -691,12 +778,12 @@ function render() {
             );
 
             if (colision.length > 0) {
-                // if (colision[0].distance < 1) {
-                //     personaje1.position.z -= 1
-                //     camera.position.z -= 1
-                //     cameraPies.position.z -= 1
-                //     puntuacionTemp =puntuacionAnterior
-                // }
+                 if (colision[0].distance < 1) {
+                     personaje1.position.z -= 1
+                     camera.position.z -= 1
+                     cameraPies.position.z -= 1
+                     puntuacionTemp =puntuacionAnterior
+                 }
             }
         }
 
@@ -711,12 +798,12 @@ function render() {
             );
 
             if (colision.length > 0) {
-                // if (colision[0].distance < 1) {
-                //     personaje1.position.z -= 1
-                //     camera.position.z -= 1
-                //     cameraPies.position.z -= 1
-                //     puntuacionTemp =puntuacionAnterior
-                // }
+                 if (colision[0].distance < 1) {
+                     personaje1.position.z -= 1
+                     camera.position.z -= 1
+                     cameraPies.position.z -= 1
+                     puntuacionTemp =puntuacionAnterior
+                 }
             }
         }  
 
