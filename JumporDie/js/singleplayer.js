@@ -35,6 +35,27 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
 })
 
+ //Shaders
+ const _VS = `
+    varying vec3 v_Normal;
+
+    void main(){
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        v_Normal = normal;
+    }
+ `;
+
+ const _FS =  `
+    uniform vec3 triangleColor;
+
+    varying vec3 v_Normal;
+
+    void main(){
+        // gl_FragColor = vec4(v_Normal, 1.0);
+        gl_FragColor = vec4(triangleColor, 1.0);
+    }
+ `;
+
 
 // Variables globales
 
@@ -69,6 +90,8 @@ var numeroAl
 var worldready = [false, false, false]
 
 var puntuacion = 0
+
+var totalTime = 0.0
 
 var p1_score = document.querySelector("#p1-score")
 
@@ -222,7 +245,18 @@ $(document).ready(function () {
         color: 0xFFFF00
     });
 
-    pyramid = new THREE.Mesh(geometry, materialRojo);
+    pyramid = new THREE.Mesh(
+        geometry, 
+        new THREE.ShaderMaterial({
+        uniforms: {
+            triangleColor: {
+                value: new THREE.Vector3(0, 0 ,1)
+            }
+        },
+        vertexShader: _VS,
+        fragmentShader: _FS,
+    }));
+
     pyramid.rotation.z = THREE.Math.degToRad(180);
 
     scene.add(pyramid);
@@ -476,6 +510,16 @@ function render() {
             camera.translateY(updown * delta);
             
             pyramid.rotation.y += 1 * delta;
+
+             //Shader
+             totalTime += delta
+             const v = Math.sin(totalTime*2.0) * 0.5 + 0.5
+             const c1 = new THREE.Vector3(1,1,0)
+             const c2 = new THREE.Vector3(0,1,1)
+ 
+             const triangleColor = c1.lerp(c2,v)
+ 
+             pyramid.material.uniforms.triangleColor.value = triangleColor
 
             if(mixers.length > 0){
                 for (let index = 0; index < mixers.length; index++) {

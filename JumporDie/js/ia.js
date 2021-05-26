@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 var firebaseConfig = {
     apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
     authDomain: "gcw-pf.firebaseapp.com",
@@ -10,6 +11,30 @@ var firebaseConfig = {
     // Initialize Firebase
     //firebase.initializeApp(firebaseConfig);
     
+=======
+ //Shaders
+ const _VS = `
+    varying vec3 v_Normal;
+
+    void main(){
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        v_Normal = normal;
+    }
+ `;
+
+ const _FS =  `
+    uniform vec3 triangleColor;
+
+    varying vec3 v_Normal;
+
+    void main(){
+        // gl_FragColor = vec4(v_Normal, 1.0);
+        gl_FragColor = vec4(triangleColor, 1.0);
+    }
+ `;
+ 
+ 
+>>>>>>> Stashed changes
  // Variables globales
  
  const fs = firebase.firestore()
@@ -50,6 +75,9 @@ var firebaseConfig = {
 
  //PARTICULAS 
  let rain, rainGeo, rainCount = 15000
+
+ //Shader 
+ var totalTime = 0.0
 
  $(document).ready(function () {
 
@@ -237,8 +265,20 @@ var firebaseConfig = {
         color: 0xFFFF00
     });
 
-    pyramid = new THREE.Mesh(geometry, materialRojo);
+    pyramid = new THREE.Mesh(
+        geometry, 
+        new THREE.ShaderMaterial({
+        uniforms: {
+            triangleColor: {
+                value: new THREE.Vector3(0, 0 ,1)
+            }
+        },
+        vertexShader: _VS,
+        fragmentShader: _FS,
+    }));
+
     pyramid.rotation.z = THREE.Math.degToRad(180);
+    pyramid.name = "piramide"
 
     pyramid2 = new THREE.Mesh(geometry, materialAmarillo);
     pyramid2.rotation.z = THREE.Math.degToRad(180);
@@ -456,6 +496,8 @@ var firebaseConfig = {
     rain = new THREE.Points(rainGeo, rainMaterial)
     scene.add(rain)
 
+   
+
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
 
@@ -599,6 +641,17 @@ function render() {
             
             pyramid.rotation.y += 1 * delta;
             pyramid2.rotation.y += 1 * delta;
+
+            //Shader
+            totalTime += delta
+            const v = Math.sin(totalTime*2.0) * 0.5 + 0.5
+            const c1 = new THREE.Vector3(1,1,0)
+            const c2 = new THREE.Vector3(0,1,1)
+
+            const triangleColor = c1.lerp(c2,v)
+
+            pyramid.material.uniforms.triangleColor.value = triangleColor
+
 
             // Animaciones
             // Mide el arreglo de mixers mientras no este vacio
