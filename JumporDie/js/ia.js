@@ -1,17 +1,17 @@
-<<<<<<< Updated upstream
-var firebaseConfig = {
-    apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
-    authDomain: "gcw-pf.firebaseapp.com",
-    projectId: "gcw-pf",
-    storageBucket: "gcw-pf.appspot.com",
-    messagingSenderId: "270321268780",
-    appId: "1:270321268780:web:68b32fb6bf2b9e0ffaf989",
-    measurementId: "G-3TRFSPGLMN"
-    };
+
+// var firebaseConfig = {
+//     apiKey: "AIzaSyAt9SffQbYI2mDHh1nv6GdI5aAisYD4QL0",
+//     authDomain: "gcw-pf.firebaseapp.com",
+//     projectId: "gcw-pf",
+//     storageBucket: "gcw-pf.appspot.com",
+//     messagingSenderId: "270321268780",
+//     appId: "1:270321268780:web:68b32fb6bf2b9e0ffaf989",
+//     measurementId: "G-3TRFSPGLMN"
+//     };
     // Initialize Firebase
     //firebase.initializeApp(firebaseConfig);
     
-=======
+
  //Shaders
  const _VS = `
     varying vec3 v_Normal;
@@ -33,8 +33,7 @@ var firebaseConfig = {
     }
  `;
  
- 
->>>>>>> Stashed changes
+
  // Variables globales
  
  const fs = firebase.firestore()
